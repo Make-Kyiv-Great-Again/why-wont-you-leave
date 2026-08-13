@@ -1,0 +1,7 @@
+/build/
+/build_web/
+/.vscode/
+/.idea/
+*.out
+*.app
+.DS_Store

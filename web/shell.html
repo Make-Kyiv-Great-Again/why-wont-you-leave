@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <title>Raylib Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: rgb(21, 20, 20);
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        canvas.emscripten {
+            border: 0px none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+  </head>
+  <body>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+    <script type='text/javascript'>
+      var Module = {
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+          canvas.addEventListener("webglcontextlost", function(e) { 
+              alert('WebGL context lost. You will need to reload the page.'); 
+              e.preventDefault(); 
+          }, false);
+          return canvas;
+        })()
+      };
+    </script>
+    
+    <!-- Emscripten injects the generated JS here -->
+    {{{ SCRIPT }}}
+  </body>
+</html>
