@@ -4,4 +4,13 @@
 /.idea/
 *.out
 *.app
+*.exe
+*.o
+*.a
+*.dylib
+*.so
+*.dll
 .DS_Store
+compile_commands.json
+CMakeCache.txt
+CMakeFiles/
