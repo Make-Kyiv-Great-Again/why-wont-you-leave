@@ -1,14 +1,19 @@
 #include "scenes/TestScene.hpp"
+#include "scenes/SecondScene.hpp"
+#include "core/SceneManager.hpp"
 #include <cmath>
 
 GlowingSquare::GlowingSquare() {
     position = raylib::Vector2(GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f);
-    color = raylib::Color(0, 121, 241, 255); // Blue
+    color = raylib::Color(255, 255, 0, 255);
 }
 
 void GlowingSquare::Update(float deltaTime) {
-    // Pulse logic
-    float pulse = (std::sin(GetTime() * 4.0f) + 1.0f) * 0.5f; 
+    float pulse = (std::sin(GetTime() * 4.0f) + 1.0f) * 0.5f;
+    position = raylib::Vector2(
+        GetScreenWidth() / (2.0f + std::sin(GetTime() * 1.0f) * 0.9),
+        GetScreenHeight() / (2.0f + std::cos(GetTime() * 2.7f) * 0.9)
+    );
     color.a = static_cast<unsigned char>(150 + 105 * pulse); // Pulse alpha
 }
 
@@ -29,13 +34,16 @@ TestScene::TestScene() {
 
 void TestScene::Update(float deltaTime) {
     square->Update(deltaTime);
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        SceneManager::Get().TransitionTo(std::make_unique<SecondScene>());
+    }
 }
 
 void TestScene::Draw() {
     // 1. Render to Texture
     renderTarget.BeginMode();
     {
-        ClearBackground(raylib::Color::Black());
+        ClearBackground(raylib::Color(10, 10, 20));
         square->Draw();
     }
     renderTarget.EndMode();
