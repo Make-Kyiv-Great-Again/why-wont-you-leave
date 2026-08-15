@@ -30,6 +30,7 @@ public:
 
 private:
     void DrawHoldQGauge(Vector2 centerPos, float progress, bool isRemembering);
+    void DrawInteractionPrompt();
     void UpdatePauseMenu(float dt);
     void DrawPauseOverlay();
 
