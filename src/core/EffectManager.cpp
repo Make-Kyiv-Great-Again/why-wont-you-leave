@@ -1,5 +1,6 @@
 #include "core/EffectManager.hpp"
 #include <cstdlib>
+#include "core/ResourceManager.hpp"
 
 EffectManager& EffectManager::Get() {
     static EffectManager instance;
@@ -72,9 +73,9 @@ void EffectManager::Draw() {
 
         // Floating text: "FORGOTTEN..."
         const char* text = "FORGOTTEN...";
-        int tw = MeasureText(text, 22);
+        int tw = ResourceManager::MeasureGameText(text, 22);
         int tx = (int)(eff.sourceRect.x + (eff.sourceRect.width - tw) / 2.0f);
         int ty = (int)(eff.sourceRect.y - 40.0f - progress * 40.0f);
-        DrawText(text, tx, ty, 22, Fade(GRAY, fade));
+        ResourceManager::DrawGameText(text, (float)tx, (float)ty, 22.0f, Fade(GRAY, fade));
     }
 }

@@ -258,11 +258,11 @@ void DynamicScene::DrawHoldQGauge(Vector2 centerPos, float progress, bool isReme
     DrawCircleSector(centerPos, radius, 0, progress * 360.0f, 36, arcColor);
     DrawCircleSectorLines(centerPos, radius, 0, 360.0f, 36, Fade(WHITE, 0.8f));
 
-    DrawText("Q", (int)centerPos.x - 7, (int)centerPos.y - 12, 24, BLACK);
+    ResourceManager::DrawGameText("Q", centerPos.x - 7, centerPos.y - 12, 24, BLACK);
 
     const char* actionLabel = isRemembering ? "Remembering..." : "Forgetting...";
-    int textW = MeasureText(actionLabel, 20);
-    DrawText(actionLabel, (int)centerPos.x - textW / 2, (int)centerPos.y + 40, 20, isRemembering ? GOLD : ORANGE);
+    int textW = ResourceManager::MeasureGameText(actionLabel, 20);
+    ResourceManager::DrawGameText(actionLabel, centerPos.x - textW / 2, centerPos.y + 40, 20, isRemembering ? GOLD : ORANGE);
 }
 
 void DynamicScene::Draw() {
@@ -291,7 +291,7 @@ void DynamicScene::Draw() {
     DrawLine(0, (int)groundY, (int)screenWidth, (int)groundY, DARKGRAY);
 
     // Scene Header Title
-    DrawText(title.c_str(), 40, 40, 48, DARKGRAY);
+    ResourceManager::DrawGameText(title.c_str(), 40, 40, 48, DARKGRAY);
 
     // Draw Doors
     for (const auto& door : doors) {
@@ -304,8 +304,8 @@ void DynamicScene::Draw() {
             DrawCircle((int)(door.rect.x + door.rect.width - 20), (int)(door.rect.y + 120), 8, GOLD);
         }
 
-        int labelWidth = MeasureText(door.label.c_str(), 32);
-        DrawText(door.label.c_str(),
+        int labelWidth = ResourceManager::MeasureGameText(door.label.c_str(), 32);
+        ResourceManager::DrawGameText(door.label.c_str(),
                  (int)(door.rect.x + (door.rect.width - labelWidth) / 2.0f),
                  (int)(door.rect.y - 50), 32, door.borderColor);
     }
@@ -335,17 +335,17 @@ void DynamicScene::Draw() {
     // Interaction Banner / Controls Guidance
     if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB)) {
         if (!promptText.empty()) {
-            int textWidth = MeasureText(promptText.c_str(), 36);
+            int textWidth = ResourceManager::MeasureGameText(promptText.c_str(), 36);
             int bannerX = ((int)screenWidth - textWidth - 80) / 2;
             DrawRectangle(bannerX, 690, textWidth + 80, 70, Fade(DARKGRAY, 0.85f));
-            DrawText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 706, 36, WHITE);
+            ResourceManager::DrawGameText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 706, 36, WHITE);
         } else {
-            DrawText(controlsHint.c_str(), 40, 736, 30, GRAY);
+            ResourceManager::DrawGameText(controlsHint.c_str(), 40, 736, 30, GRAY);
         }
 
         const char* tabHint = "[Hold TAB] Memory Archive | [R] Reload Scene";
-        int tabW = MeasureText(tabHint, 24);
-        DrawText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
+        int tabW = ResourceManager::MeasureGameText(tabHint, 24);
+        ResourceManager::DrawGameText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
     }
 
     // Draw Dialogue Overlay

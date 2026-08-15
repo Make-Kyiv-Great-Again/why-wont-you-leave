@@ -44,6 +44,8 @@ int main() {
     // Toggle into Fullscreen Borderless Mode
     ToggleBorderlessWindowed();
 
+    InitAudioDevice(); // Initialize audio for typing sfx
+
     SceneManager::Get().Init(virtualWidth, virtualHeight);
     SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
 
@@ -57,6 +59,7 @@ int main() {
     }
 #endif
 
+    CloseAudioDevice(); // Close audio device
     CloseWindow();
     return 0;
 }

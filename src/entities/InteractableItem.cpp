@@ -1,6 +1,7 @@
 #include "entities/InteractableItem.hpp"
 #include "dialogue/DialogueManager.hpp"
 #include "core/MemoryManager.hpp"
+#include "core/ResourceManager.hpp"
 #include <cmath>
 
 InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue)
@@ -53,8 +54,8 @@ void InteractableItem::Draw() const {
 
         // Label above
         std::string labelText = name + " ✦";
-        int labelWidth = MeasureText(labelText.c_str(), 22);
-        DrawText(labelText.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 34), 22, GOLD);
+        int labelWidth = ResourceManager::MeasureGameText(labelText.c_str(), 22);
+        ResourceManager::DrawGameText(labelText.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 34), 22, GOLD);
     } else {
         // Normal state
         if (sprite.IsValid()) {
@@ -66,7 +67,7 @@ void InteractableItem::Draw() const {
         }
 
         // Label above
-        int labelWidth = MeasureText(name.c_str(), 22);
-        DrawText(name.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 32), 22, DARKGRAY);
+        int labelWidth = ResourceManager::MeasureGameText(name.c_str(), 22);
+        ResourceManager::DrawGameText(name.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 32), 22, DARKGRAY);
     }
 }
