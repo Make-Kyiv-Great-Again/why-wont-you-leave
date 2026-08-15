@@ -443,8 +443,14 @@ void DynamicScene::Update(float dt) {
                                 ActManager::Get().MarkArtifactRemembered(it->artifactId);
                                 holdQTimer = 0.0f;
                                 EffectManager::Get().SpawnForgettingEffect(it->rect, GOLD);
-                                Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
-                                if (selectSfx.frameCount > 0) PlaySound(selectSfx);
+                                Sound addSound = ResourceManager::Get().GetSound("assets/sounds/add_item_sound.mp3");
+                                if (addSound.frameCount > 0) {
+                                    StopSound(addSound);
+                                    PlaySound(addSound);
+                                } else {
+                                    Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+                                    if (selectSfx.frameCount > 0) PlaySound(selectSfx);
+                                }
                                 promptText = "";
                                 return;
                             }
