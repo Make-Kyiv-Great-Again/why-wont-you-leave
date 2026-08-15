@@ -144,6 +144,32 @@ void MainMenuScene::Draw() {
 
     // Helper Lambda to draw user's custom sprite button with hover highlight (NO text overlays)
     float time = (float)GetTime();
+
+    // Draw Game Title Sprite
+    Texture2D titleTex = ResourceManager::Get().GetTexture("assets/sprites/title.png");
+    if (titleTex.id == 0) {
+        titleTex = ResourceManager::Get().GetTexture("assets/sprites/WHY WON’T YOU LEAVE_.svg");
+    }
+    if (titleTex.id != 0) {
+        float titleW = 1100.0f;
+        float titleH = titleW * ((float)titleTex.height / (float)titleTex.width);
+        float titleOffset = sinf(time * 1.5f) * 5.0f;
+        Rectangle titleDest = {
+            (screenWidth - titleW) / 2.0f,
+            190.0f + titleOffset,
+            titleW,
+            titleH
+        };
+        DrawTexturePro(
+            titleTex,
+            Rectangle{ 0, 0, (float)titleTex.width, (float)titleTex.height },
+            titleDest,
+            Vector2{ 0, 0 },
+            0.0f,
+            WHITE
+        );
+    }
+
     auto DrawMenuButton = [&](int index, Rectangle rect, const char* texturePath) {
         bool isSelected = (selectedButtonIndex == index);
         Texture2D btnTex = ResourceManager::Get().GetTexture(texturePath);
