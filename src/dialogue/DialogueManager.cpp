@@ -47,6 +47,7 @@ void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, con
 
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/ui_typing_sound.mp3");
         if (sfx.frameCount > 0) {
+            SetSoundVolume(sfx, 2.0f);
             StopSound(sfx);
             
             float soundDuration = (sfx.stream.sampleRate > 0) ? (float)sfx.frameCount / sfx.stream.sampleRate : 0.0f;
@@ -177,6 +178,7 @@ void DialogueManager::Update(float dt) {
         if (selectedOption != prevSelected) {
             Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
             if (sfx.frameCount > 0) {
+                SetSoundVolume(sfx, 2.0f);
                 StopSound(sfx);
                 PlaySound(sfx);
             }
@@ -186,6 +188,7 @@ void DialogueManager::Update(float dt) {
         if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) {
             Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
             if (selectSfx.frameCount > 0) {
+                SetSoundVolume(selectSfx, 2.0f);
                 StopSound(selectSfx);
                 PlaySound(selectSfx);
             }
@@ -223,6 +226,7 @@ void DialogueManager::Update(float dt) {
                         isMemoryMode = true;
                     }
                     if (sfx.frameCount > 0) {
+                        SetSoundVolume(sfx, 2.0f);
                         float soundDuration = (sfx.stream.sampleRate > 0) ? (float)sfx.frameCount / sfx.stream.sampleRate : 0.0f;
                         float defaultSpeed = 0.035f;
                         float totalLen = (float)currentNode->text.length();

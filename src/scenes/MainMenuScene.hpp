@@ -6,7 +6,7 @@
 class MainMenuScene : public Scene {
 public:
     MainMenuScene();
-    ~MainMenuScene() override = default;
+    ~MainMenuScene() override;
 
     void Update(float dt) override;
     void Draw() override;

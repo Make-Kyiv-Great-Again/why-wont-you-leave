@@ -49,6 +49,19 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
     }
 
     player.rect.y = groundY - player.rect.height;
+
+    // Stop main menu sound when entering gameplay
+    Music menuMusic = ResourceManager::Get().GetMusic("assets/sounds/menu_sound.wav");
+    if (menuMusic.ctxData != nullptr && IsMusicStreamPlaying(menuMusic)) {
+        StopMusicStream(menuMusic);
+    }
+}
+
+DynamicScene::~DynamicScene() {
+    Music gameMusic = ResourceManager::Get().GetMusic("assets/sounds/game_sound.mp3");
+    if (gameMusic.ctxData != nullptr && IsMusicStreamPlaying(gameMusic)) {
+        StopMusicStream(gameMusic);
+    }
 }
 
 void DynamicScene::LoadFromConfigFile(const std::string& path) {
@@ -241,6 +254,7 @@ void DynamicScene::UpdatePauseMenu(float dt) {
     if (pauseSelectedBtn != prevSelected) {
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
         if (sfx.frameCount > 0) {
+            SetSoundVolume(sfx, 2.0f);
             StopSound(sfx);
             PlaySound(sfx);
         }
@@ -252,6 +266,7 @@ void DynamicScene::UpdatePauseMenu(float dt) {
     if (actionPressed) {
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
         if (sfx.frameCount > 0) {
+            SetSoundVolume(sfx, 2.0f);
             StopSound(sfx);
             PlaySound(sfx);
         }
@@ -268,6 +283,15 @@ void DynamicScene::UpdatePauseMenu(float dt) {
 }
 
 void DynamicScene::Update(float dt) {
+    // Play/loop game background music stream during gameplay
+    Music gameMusic = ResourceManager::Get().GetMusic("assets/sounds/game_sound.mp3");
+    if (gameMusic.ctxData != nullptr) {
+        if (!IsMusicStreamPlaying(gameMusic)) {
+            PlayMusicStream(gameMusic);
+        }
+        UpdateMusicStream(gameMusic);
+    }
+
     // Pressing ESC toggles in-game pause
     if (IsKeyPressed(KEY_ESCAPE)) {
         isPaused = !isPaused;
@@ -384,10 +408,19 @@ void DynamicScene::Update(float dt) {
     // Check interaction with Doors
     for (const auto& door : doors) {
         if (CheckCollisionRecs(player.rect, door.rect)) {
+            auto PlayDoorSfx = []() {
+                Sound doorSfx = ResourceManager::Get().GetSound("assets/sounds/door_sound.mp3");
+                if (doorSfx.frameCount > 0) {
+                    StopSound(doorSfx);
+                    PlaySound(doorSfx);
+                }
+            };
+
             if (door.targetScene == "exit_door") {
                 if (ActManager::Get().CanUseExitDoor()) {
                     promptText = "Press [E] to Step Through Exit";
                     if (IsKeyPressed(KEY_E)) {
+                        PlayDoorSfx();
                         isExitDistortionActive = true;
                         exitDistortionTimer = 0.0f;
                         pendingExitIsSceneChange = true;
@@ -400,12 +433,14 @@ void DynamicScene::Update(float dt) {
             } else if (door.targetScene == "act5_choice") {
                 promptText = "Press [E] to open THE DOOR";
                 if (IsKeyPressed(KEY_E)) {
+                    PlayDoorSfx();
                     DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act5_leave_choice.json");
                     return;
                 }
             } else {
                 promptText = "Press [E] to enter " + door.label;
                 if (IsKeyPressed(KEY_E)) {
+                    PlayDoorSfx();
                     SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX, door.targetDoor));
                     return;
                 }

@@ -22,7 +22,7 @@ struct DoorData {
 class DynamicScene : public Scene {
 public:
     DynamicScene(const std::string& sceneId, float spawnPlayerX = -1.0f, const std::string& targetDoorLabel = "");
-    ~DynamicScene() override = default;
+    ~DynamicScene() override;
 
     void LoadFromConfigFile(const std::string& path);
     void Update(float dt) override;

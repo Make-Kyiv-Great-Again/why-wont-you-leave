@@ -25,9 +25,31 @@ MainMenuScene::MainMenuScene() {
 
     optionsBtnRect = Rectangle{ startX, subRowY, subBtnW, subBtnH };
     exitBtnRect    = Rectangle{ startX + subBtnW + gap, subRowY, subBtnW, subBtnH };
+
+    // Stop gameplay background music if coming from game
+    Music gameMusic = ResourceManager::Get().GetMusic("assets/sounds/game_sound.mp3");
+    if (gameMusic.ctxData != nullptr && IsMusicStreamPlaying(gameMusic)) {
+        StopMusicStream(gameMusic);
+    }
+}
+
+MainMenuScene::~MainMenuScene() {
+    Music menuMusic = ResourceManager::Get().GetMusic("assets/sounds/menu_sound.wav");
+    if (menuMusic.ctxData != nullptr && IsMusicStreamPlaying(menuMusic)) {
+        StopMusicStream(menuMusic);
+    }
 }
 
 void MainMenuScene::Update(float dt) {
+    // Play/loop menu sound while in Main Menu
+    Music menuMusic = ResourceManager::Get().GetMusic("assets/sounds/menu_sound.wav");
+    if (menuMusic.ctxData != nullptr) {
+        if (!IsMusicStreamPlaying(menuMusic)) {
+            PlayMusicStream(menuMusic);
+        }
+        UpdateMusicStream(menuMusic);
+    }
+
     // Pressing ESC inside Main Menu quits the game
     if (IsKeyPressed(KEY_ESCAPE)) {
         CloseWindow();
@@ -63,6 +85,7 @@ void MainMenuScene::Update(float dt) {
     if (selectedButtonIndex != prevSelected) {
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
         if (sfx.frameCount > 0) {
+            SetSoundVolume(sfx, 2.0f);
             StopSound(sfx);
             PlaySound(sfx);
         }
@@ -74,6 +97,7 @@ void MainMenuScene::Update(float dt) {
     if (actionPressed) {
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
         if (sfx.frameCount > 0) {
+            SetSoundVolume(sfx, 2.0f);
             StopSound(sfx);
             PlaySound(sfx);
         }

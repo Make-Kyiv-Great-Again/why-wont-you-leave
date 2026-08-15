@@ -26,6 +26,9 @@ public:
     // Sound caching
     Sound GetSound(const std::string& filePath);
 
+    // Music stream caching
+    Music GetMusic(const std::string& filePath);
+
     // Custom text rendering utilities using game font
     static void DrawGameText(const char* text, float posX, float posY, float fontSize, Color color);
     static int MeasureGameText(const char* text, float fontSize);
@@ -44,4 +47,5 @@ private:
     std::unordered_map<std::string, Shader> shaderCache;
     std::unordered_map<std::string, Font> fontCache;
     std::unordered_map<std::string, Sound> soundCache;
+    std::unordered_map<std::string, Music> musicCache;
 };
