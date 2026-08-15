@@ -12,14 +12,21 @@
   },
   "dust_particles": {
     "enabled": true,
-    "count": 40,
-    "color": "#E8DEC8"
+    "count": 65,
+    "color": "#FFF4DA"
   },
   "doors": [
     {
       "label": "Corridor",
-      "rect": { "x": 60.0, "y": 200.0, "width": 200.0, "height": 560.0 },
+      "rect": { "x": 60.0, "y": 200.0, "width": 220.0, "height": 560.0 },
       "target_scene": "corridor",
+      "target_door": "Kitchen",
+      "is_visible": false
+    },
+    {
+      "label": "Bathroom",
+      "rect": { "x": 1780.0, "y": 200.0, "width": 200.0, "height": 560.0 },
+      "target_scene": "bathroom",
       "target_door": "Kitchen",
       "is_visible": false
     }

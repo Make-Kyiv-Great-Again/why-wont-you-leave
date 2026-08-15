@@ -3,72 +3,33 @@
   "title": "CORRIDOR",
   "ground_y": 760.0,
   "background_color": "#F5F5F5",
-  "background_texture": "assets/sprites/bg1.png",
+  "background_texture": "assets/sprites/coridor.png",
   "player_lighting": {
     "shader": "assets/shaders/glsl330/player_lighting.fs",
-    "ambient_color": "#95908A",
+    "ambient_color": "#809285",
     "brightness": 0.82,
-    "warmth": 1.02
+    "warmth": 1.05
   },
   "dust_particles": {
     "enabled": true,
-    "count": 40,
-    "color": "#E8DEC8"
+    "count": 75,
+    "color": "#FFF4DA"
   },
   "doors": [
     {
-      "label": "Exit Door",
-      "rect": { "x": 100.0, "y": 480.0, "width": 140.0, "height": 280.0 },
-      "target_scene": "exit_door",
-      "target_door": "Corridor",
-      "door_color": "#3B2F2F",
-      "border_color": "#1C140E",
-      "texture": "assets/sprites/door.png"
-    },
-    {
-      "label": "Bathroom",
-      "rect": { "x": 550.0, "y": 520.0, "width": 130.0, "height": 240.0 },
-      "target_scene": "bathroom",
-      "target_door": "Corridor",
-      "door_color": "#8B4513",
-      "border_color": "#5C4033",
-      "texture": "assets/sprites/door.png"
-    },
-    {
       "label": "Bedroom",
-      "rect": { "x": 1000.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 160.0, "y": 200.0, "width": 240.0, "height": 560.0 },
       "target_scene": "bedroom",
       "target_door": "Corridor",
-      "door_color": "#8B4513",
-      "border_color": "#5C4033",
-      "texture": "assets/sprites/door.png"
+      "is_visible": false
     },
     {
       "label": "Kitchen",
-      "rect": { "x": 1450.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 1560.0, "y": 200.0, "width": 220.0, "height": 560.0 },
       "target_scene": "kitchen",
       "target_door": "Corridor",
-      "door_color": "#8B4513",
-      "border_color": "#5C4033",
-      "texture": "assets/sprites/door.png"
+      "is_visible": false
     }
   ],
-  "items": [
-    {
-      "artifact_id": "car_keys",
-      "name": "Car Keys",
-      "rect": { "x": 320.0, "y": 680.0, "width": 70.0, "height": 70.0 },
-      "color": "#D4AF37",
-      "border_color": "#8C721E",
-      "dialogue_file": "assets/data/dialogues/car_keys.json"
-    },
-    {
-      "artifact_id": "photo_other_man",
-      "name": "Coat Pocket Photo",
-      "rect": { "x": 440.0, "y": 680.0, "width": 70.0, "height": 70.0 },
-      "color": "#4A6B82",
-      "border_color": "#203A43",
-      "dialogue_file": "assets/data/dialogues/photo_other_man.json"
-    }
-  ]
+  "items": []
 }
