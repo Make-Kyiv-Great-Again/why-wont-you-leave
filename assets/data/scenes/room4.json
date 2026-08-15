@@ -1,0 +1,27 @@
+{
+  "id": "room4",
+  "title": "ROOM 4 - OBSIDIAN VAULT",
+  "ground_y": 660.0,
+  "background_color": "#1A1A2E",
+  "controls_hint": "Controls: [A/D] to Move | [E] Inspect | [Hold Q] Remember/Forget",
+  "doors": [
+    {
+      "label": "Corridor",
+      "rect": { "x": 100.0, "y": 420.0, "width": 130.0, "height": 240.0 },
+      "target_scene": "corridor",
+      "target_spawn_x": 1600.0,
+      "door_color": "#8B4513",
+      "border_color": "#5C4033"
+    }
+  ],
+  "items": [
+    {
+      "artifact_id": "obsidian_heart",
+      "name": "Obsidian Heart",
+      "rect": { "x": 1050.0, "y": 570.0, "width": 90.0, "height": 90.0 },
+      "color": "#DC143C",
+      "border_color": "#8B0000",
+      "dialogue_file": "assets/data/dialogues/obsidian_heart.json"
+    }
+  ]
+}

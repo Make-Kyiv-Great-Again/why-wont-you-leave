@@ -63,16 +63,17 @@ void SceneManager::Update(float dt) {
 }
 
 void SceneManager::Draw() {
-    if (!currentScene) return;
+    if (!currentScene || !isBufferInitialized) return;
 
-    if (tabTransition > 0.0f && isBufferInitialized) {
-        // 1. Draw scene to full-size sceneBuffer
-        BeginTextureMode(sceneBuffer);
-        ClearBackground(RAYWHITE);
-        currentScene->Draw();
-        EndTextureMode();
+    // 1. Always render scene to virtual resolution sceneBuffer (2000x800)
+    BeginTextureMode(sceneBuffer);
+    ClearBackground(RAYWHITE);
+    currentScene->Draw();
+    EndTextureMode();
 
-        // 2. Draw sceneBuffer downscaled to blurBuffer
+    // 2. If holding TAB, render Memory Overlay on top of sceneBuffer
+    if (tabTransition > 0.0f) {
+        // Downscale sceneBuffer to blurBuffer
         BeginTextureMode(blurBuffer);
         ClearBackground(BLACK);
         DrawTexturePro(
@@ -85,33 +86,39 @@ void SceneManager::Draw() {
         );
         EndTextureMode();
 
-        // 3. Draw full-size sharp scene on screen
-        DrawTexturePro(
-            sceneBuffer.texture,
-            Rectangle{ 0, 0, (float)sceneBuffer.texture.width, -(float)sceneBuffer.texture.height },
-            Rectangle{ 0, 0, (float)screenWidth, (float)screenHeight },
-            Vector2{ 0, 0 },
-            0.0f,
-            WHITE
-        );
-
-        // 4. Draw blurry blurBuffer scaled up and blended over screen
+        // Render blur & overlay into sceneBuffer
+        BeginTextureMode(sceneBuffer);
         DrawTexturePro(
             blurBuffer.texture,
             Rectangle{ 0, 0, (float)blurBuffer.texture.width, -(float)blurBuffer.texture.height },
-            Rectangle{ 0, 0, (float)screenWidth, (float)screenHeight },
+            Rectangle{ 0, 0, (float)sceneBuffer.texture.width, (float)sceneBuffer.texture.height },
             Vector2{ 0, 0 },
             0.0f,
             Fade(WHITE, tabTransition)
         );
-
-        // 5. Draw dark dimming overlay
         DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, tabTransition * 0.94f));
-
-        // 6. Draw mysterious Memory Overlay directly to screen space (sharp & colorful)
         MemoryManager::Get().DrawMemoryInventoryOverlay(tabTransition);
-    } else {
-        // Tab not pressed: Draw normally directly to the screen
-        currentScene->Draw();
+        EndTextureMode();
     }
+
+    // 3. Draw sceneBuffer to window screen, automatically scaled & letterboxed for display resolution
+    int windowW = GetScreenWidth();
+    int windowH = GetScreenHeight();
+
+    float scale = fminf((float)windowW / (float)screenWidth, (float)windowH / (float)screenHeight);
+    float destW = screenWidth * scale;
+    float destH = screenHeight * scale;
+    float destX = (windowW - destW) * 0.5f;
+    float destY = (windowH - destH) * 0.5f;
+
+    ClearBackground(BLACK);
+
+    DrawTexturePro(
+        sceneBuffer.texture,
+        Rectangle{ 0, 0, (float)sceneBuffer.texture.width, -(float)sceneBuffer.texture.height },
+        Rectangle{ destX, destY, destW, destH },
+        Vector2{ 0, 0 },
+        0.0f,
+        WHITE
+    );
 }

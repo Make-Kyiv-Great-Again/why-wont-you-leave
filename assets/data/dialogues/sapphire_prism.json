@@ -16,7 +16,8 @@
       "options": [
         { "text": "I seek knowledge about this corridor.", "target_id": 2 },
         { "text": "I'm looking for an exit.", "target_id": 3 },
-        { "text": "Just exploring randomly.", "target_id": 4 }
+        { "text": "Just exploring randomly.", "target_id": 4 },
+        { "text": "[NEW CHOICE] Who are you?", "target_id": 6 }
       ]
     },
     {
@@ -45,6 +46,13 @@
       "speaker": "THE VOICE",
       "text": "Remember this: not all who wander these chambers are truly alone.",
       "next_id": -1,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "THE VOICE",
+      "text": "I am the Ancient Echo! You added this dialogue branch purely through JSON without touching C++!",
+      "next_id": 5,
       "options": []
     }
   ]
