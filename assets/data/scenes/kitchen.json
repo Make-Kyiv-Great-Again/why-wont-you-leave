@@ -8,12 +8,10 @@
   "doors": [
     {
       "label": "Corridor",
-      "rect": { "x": 100.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 60.0, "y": 200.0, "width": 200.0, "height": 560.0 },
       "target_scene": "corridor",
       "target_door": "Kitchen",
-      "door_color": "#8B4513",
-      "border_color": "#5C4033",
-      "texture": "assets/sprites/door.png"
+      "is_visible": false
     }
   ],
   "items": []

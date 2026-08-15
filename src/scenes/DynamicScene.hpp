@@ -16,6 +16,7 @@ struct DoorData {
     Color doorColor;
     Color borderColor;
     Sprite sprite;
+    bool isVisible = true;
 };
 
 class DynamicScene : public Scene {

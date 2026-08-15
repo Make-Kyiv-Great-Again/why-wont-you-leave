@@ -7,9 +7,9 @@
   "controls_hint": "",
   "doors": [
     {
-      "label": "Room 1",
+      "label": "Bathroom",
       "rect": { "x": 250.0, "y": 520.0, "width": 130.0, "height": 240.0 },
-      "target_scene": "room1",
+      "target_scene": "bathroom",
       "target_door": "Corridor",
       "door_color": "#8B4513",
       "border_color": "#5C4033",

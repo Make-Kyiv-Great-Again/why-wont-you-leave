@@ -103,6 +103,11 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
                 door.sprite.texturePath = doorJson["sprite"]["texture"].get<std::string>();
             }
 
+            door.isVisible = doorJson.value("is_visible", true);
+            if (doorJson.contains("is_transparent") && doorJson["is_transparent"].get<bool>()) {
+                door.isVisible = false;
+            }
+
             doors.push_back(door);
         }
     }
@@ -415,6 +420,10 @@ void DynamicScene::Draw() {
 
     // Draw Doors
     for (const auto& door : doors) {
+        if (!door.isVisible) {
+            continue; // Skip rendering for invisible/background-integrated doors
+        }
+
         if (door.sprite.IsValid()) {
             door.sprite.Draw(door.rect);
             DrawRectangleLinesEx(door.rect, 4, door.borderColor);
