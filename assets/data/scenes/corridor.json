@@ -10,7 +10,7 @@
       "label": "Room 1",
       "rect": { "x": 250.0, "y": 420.0, "width": 130.0, "height": 240.0 },
       "target_scene": "room1",
-      "target_spawn_x": 424.0,
+      "target_door": "Corridor",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"
@@ -19,7 +19,7 @@
       "label": "Room 2",
       "rect": { "x": 700.0, "y": 420.0, "width": 130.0, "height": 240.0 },
       "target_scene": "room2",
-      "target_spawn_x": 960.0,
+      "target_door": "Corridor",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"
@@ -28,7 +28,7 @@
       "label": "Room 3",
       "rect": { "x": 1150.0, "y": 420.0, "width": 130.0, "height": 240.0 },
       "target_scene": "room3",
-      "target_spawn_x": 1494.0,
+      "target_door": "Corridor",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"
@@ -37,7 +37,7 @@
       "label": "Room 4 (Secret)",
       "rect": { "x": 1600.0, "y": 420.0, "width": 130.0, "height": 240.0 },
       "target_scene": "room4",
-      "target_spawn_x": 300.0,
+      "target_door": "Corridor",
       "door_color": "#2B1B17",
       "border_color": "#8B0000",
       "texture": "assets/sprites/door.png"

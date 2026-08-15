@@ -8,15 +8,32 @@
 #include <cmath>
 #include <iostream>
 
-DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX)
+DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const std::string& targetDoorLabel)
     : sceneId(sceneId),
       jsonPath("assets/data/scenes/" + sceneId + ".json"),
       screenWidth(2000.0f),
       screenHeight(800.0f),
       groundY(660.0f),
       backgroundColor(RAYWHITE),
-      player(spawnPlayerX, 660.0f) {
+      player(spawnPlayerX >= 0.0f ? spawnPlayerX : 200.0f, 660.0f) {
     LoadFromConfigFile(jsonPath);
+
+    // Auto-position player centered directly in front of the door matching targetDoorLabel
+    bool positionedByDoor = false;
+    if (!targetDoorLabel.empty()) {
+        for (const auto& door : doors) {
+            if (door.label == targetDoorLabel) {
+                player.rect.x = door.rect.x + (door.rect.width - player.rect.width) / 2.0f;
+                positionedByDoor = true;
+                break;
+            }
+        }
+    }
+
+    if (!positionedByDoor && spawnPlayerX >= 0.0f) {
+        player.rect.x = spawnPlayerX;
+    }
+
     player.rect.y = groundY - player.rect.height;
 }
 
@@ -49,7 +66,8 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
             DoorData door;
             door.label = doorJson.value("label", "Door");
             door.targetScene = doorJson.value("target_scene", "corridor");
-            door.targetSpawnX = doorJson.value("target_spawn_x", 200.0f);
+            door.targetDoor = doorJson.value("target_door", "");
+            door.targetSpawnX = doorJson.value("target_spawn_x", -1.0f);
             
             if (doorJson.contains("rect")) {
                 auto r = doorJson["rect"];
@@ -180,7 +198,7 @@ void DynamicScene::Update(float dt) {
             promptText = "Press [E] to enter " + door.label;
             holdQTimer = 0.0f;
             if (IsKeyPressed(KEY_E)) {
-                SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX));
+                SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX, door.targetDoor));
                 return;
             }
         }

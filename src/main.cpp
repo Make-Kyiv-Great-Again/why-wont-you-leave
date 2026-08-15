@@ -9,6 +9,11 @@
 void UpdateDrawFrame() {
     float dt = GetFrameTime();
 
+    // Toggle Fullscreen / Windowed with F11 or Alt+Enter
+    if (IsKeyPressed(KEY_F11) || ((IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) && IsKeyPressed(KEY_ENTER))) {
+        ToggleBorderlessWindowed();
+    }
+
     SceneManager::Get().Update(dt);
 
     BeginDrawing();
@@ -23,27 +28,21 @@ int main() {
     const int virtualWidth = 2000;
     const int virtualHeight = 800;
 
-    // Fallback default size
+    // Fallback window initialization
     InitWindow(1280, 512, "2D Room Navigation Game");
 
-    // Automatically adapt initial window size to fit user's monitor screen
+    // Query active monitor dimensions & launch in Fullscreen Borderless Mode
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
 
     if (monitorWidth > 0 && monitorHeight > 0) {
-        int winWidth = (int)(monitorWidth * 0.75f);
-        int winHeight = (int)(winWidth * ((float)virtualHeight / (float)virtualWidth));
-
-        // Ensure window height fits comfortably within screen boundaries (e.g. 80% max)
-        if (winHeight > (int)(monitorHeight * 0.80f)) {
-            winHeight = (int)(monitorHeight * 0.80f);
-            winWidth = (int)(winHeight * ((float)virtualWidth / (float)virtualHeight));
-        }
-
-        SetWindowSize(winWidth, winHeight);
-        SetWindowPosition((monitorWidth - winWidth) / 2, (monitorHeight - winHeight) / 2);
+        SetWindowSize(monitorWidth, monitorHeight);
+        SetWindowPosition(0, 0);
     }
+
+    // Toggle into Fullscreen Borderless Mode
+    ToggleBorderlessWindowed();
 
     SceneManager::Get().Init(virtualWidth, virtualHeight);
     SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));

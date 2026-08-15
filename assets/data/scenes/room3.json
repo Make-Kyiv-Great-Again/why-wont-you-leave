@@ -9,7 +9,7 @@
       "label": "Corridor",
       "rect": { "x": 100.0, "y": 420.0, "width": 130.0, "height": 240.0 },
       "target_scene": "corridor",
-      "target_spawn_x": 1494.0,
+      "target_door": "Room 3",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"

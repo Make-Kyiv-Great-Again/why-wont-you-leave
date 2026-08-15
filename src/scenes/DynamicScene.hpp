@@ -11,6 +11,7 @@ struct DoorData {
     Rectangle rect;
     std::string label;
     std::string targetScene;
+    std::string targetDoor;
     float targetSpawnX;
     Color doorColor;
     Color borderColor;
@@ -19,7 +20,7 @@ struct DoorData {
 
 class DynamicScene : public Scene {
 public:
-    DynamicScene(const std::string& sceneId, float spawnPlayerX = 200.0f);
+    DynamicScene(const std::string& sceneId, float spawnPlayerX = -1.0f, const std::string& targetDoorLabel = "");
     ~DynamicScene() override = default;
 
     void LoadFromConfigFile(const std::string& path);
