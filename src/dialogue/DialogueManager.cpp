@@ -4,6 +4,7 @@
 #include "core/ActManager.hpp"
 #include "core/SceneManager.hpp"
 #include "scenes/DynamicScene.hpp"
+#include "scenes/ActTitleScene.hpp"
 #include "scenes/MainMenuScene.hpp"
 #include <sstream>
 #include <vector>
@@ -91,25 +92,25 @@ void DialogueManager::OnDialogueFinished() {
 
     if (activeArtifactId == "windshield_fragment" && ActManager::Get().IsArtifactRemembered("windshield_fragment")) {
         ActManager::Get().SetAct(5);
-        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("the_door"));
+        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(5, "the_door"));
         return;
     }
 
     if (activeScriptPath == "assets/data/dialogues/act1_exit.json") {
         ActManager::Get().SetAct(2);
-        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(2, "corridor"));
         return;
     }
 
     if (activeScriptPath == "assets/data/dialogues/act2_voice.json") {
         ActManager::Get().SetAct(3);
-        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(3, "corridor"));
         return;
     }
 
     if (activeScriptPath == "assets/data/dialogues/act3_voice.json") {
         ActManager::Get().SetAct(4);
-        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(4, "corridor"));
         return;
     }
 

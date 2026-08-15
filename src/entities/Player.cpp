@@ -46,6 +46,18 @@ void Player::Update(float dt, float screenWidth) {
     }
 }
 
+void Player::ForceMove(float dx, float dt) {
+    rect.x += dx;
+    facingRight = (dx > 0);
+    state = PlayerState::Walking;
+
+    frameTimer += dt;
+    if (frameTimer >= walkFrameSpeed) {
+        frameTimer = 0.0f;
+        currentFrame = (currentFrame + 1) % walkFrameCount;
+    }
+}
+
 void Player::Draw() const {
     std::string texPath = (state == PlayerState::Walking)
         ? "assets/sprites/playerWalkRightAnimation.png"

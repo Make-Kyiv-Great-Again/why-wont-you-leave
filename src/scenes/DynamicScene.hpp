@@ -74,4 +74,12 @@ private:
     bool showPauseOptions = false;
     Rectangle pauseOptionsRect;
     Rectangle pauseExitRect;
+
+    // Exit door repulsion & pain distortion sequence
+    bool isExitDistortionActive = false;
+    float exitDistortionTimer = 0.0f;
+    const float exitDistortionMaxTime = 1.8f;
+    std::string pendingExitDialogue = "";
+    bool pendingExitIsSceneChange = false;
+    std::string pendingExitTargetScene = "";
 };

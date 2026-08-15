@@ -36,7 +36,7 @@
     {
       "artifact_id": "bank_receipt",
       "name": "Drawer Bank Receipt",
-      "rect": { "x": 900.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "rect": { "x": 750.0, "y": 680.0, "width": 70.0, "height": 70.0 },
       "color": "#8FBC8F",
       "border_color": "#2E8B57",
       "dialogue_file": "assets/data/dialogues/bank_receipt.json"
@@ -44,7 +44,7 @@
     {
       "artifact_id": "ticket",
       "name": "Train/Plane Ticket",
-      "rect": { "x": 900.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "rect": { "x": 1050.0, "y": 680.0, "width": 70.0, "height": 70.0 },
       "color": "#DEB887",
       "border_color": "#8B5A2B",
       "dialogue_file": "assets/data/dialogues/ticket.json"

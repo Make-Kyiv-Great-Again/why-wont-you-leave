@@ -6,6 +6,7 @@
 #include "core/ResourceManager.hpp"
 #include "core/ActManager.hpp"
 #include "scenes/MainMenuScene.hpp"
+#include "scenes/ActTitleScene.hpp"
 #include <nlohmann/json.hpp>
 #include <cmath>
 #include <iostream>
@@ -113,18 +114,11 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
         }
     }
 
-    // Load Items (filtered by current Act and vanished status)
-    int currentAct = ActManager::Get().GetCurrentAct();
+    // Load Items (filtered by vanished status)
     if (j.contains("items") && j["items"].is_array()) {
         for (const auto& itemJson : j["items"]) {
             std::string artifactId = itemJson.value("artifact_id", "item");
             
-            // Check if item belongs to current or past acts
-            int itemAct = ActManager::GetArtifactAct(artifactId);
-            if (itemAct > currentAct) {
-                continue;
-            }
-
             // If already remembered/vanished, do not spawn
             if (ActManager::Get().IsArtifactVanished(artifactId)) {
                 continue;
@@ -319,6 +313,30 @@ void DynamicScene::Update(float dt) {
         return;
     }
 
+    // Handle Exit Door repulsion and pain distortion sequence
+    if (isExitDistortionActive) {
+        exitDistortionTimer += dt;
+
+        // Step 1: Force player to step backward away from the exit door (moving right away from x=100)
+        if (exitDistortionTimer <= 0.8f) {
+            player.ForceMove(220.0f * dt, dt);
+        } else {
+            player.state = PlayerState::Idle;
+        }
+
+        // Step 2: Once repulsion & pain sequence ends, trigger dialogue or act transition
+        if (exitDistortionTimer >= exitDistortionMaxTime) {
+            isExitDistortionActive = false;
+            exitDistortionTimer = 0.0f;
+            if (pendingExitIsSceneChange) {
+                SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(5, pendingExitTargetScene));
+            } else if (!pendingExitDialogue.empty()) {
+                DialogueManager::Get().StartDialogueFile(pendingExitDialogue);
+            }
+        }
+        return; // Lock player input during exit repulsion sequence
+    }
+
     // Normal player movement
     player.Update(dt, screenWidth);
 
@@ -329,47 +347,17 @@ void DynamicScene::Update(float dt) {
     for (const auto& door : doors) {
         if (CheckCollisionRecs(player.rect, door.rect)) {
             if (door.targetScene == "exit_door") {
-                int curAct = ActManager::Get().GetCurrentAct();
-                if (curAct == 1) {
-                    if (ActManager::Get().CanUseExitDoor()) {
-                        promptText = "Press [E] to Exit the Apartment";
-                        if (IsKeyPressed(KEY_E)) {
-                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act1_exit.json");
-                            return;
-                        }
-                    } else {
-                        promptText = "Exit is locked (Explore more memories first)";
+                if (ActManager::Get().CanUseExitDoor()) {
+                    promptText = "Press [E] to Step Through Exit";
+                    if (IsKeyPressed(KEY_E)) {
+                        isExitDistortionActive = true;
+                        exitDistortionTimer = 0.0f;
+                        pendingExitIsSceneChange = true;
+                        pendingExitTargetScene = "the_door";
+                        return;
                     }
-                } else if (curAct == 2) {
-                    if (ActManager::Get().CanUseExitDoor()) {
-                        promptText = "Press [E] to Approach Exit";
-                        if (IsKeyPressed(KEY_E)) {
-                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act2_voice.json");
-                            return;
-                        }
-                    } else {
-                        promptText = "Exit is locked (Explore more memories first)";
-                    }
-                } else if (curAct == 3) {
-                    if (ActManager::Get().CanUseExitDoor()) {
-                        promptText = "Press [E] to Approach Exit";
-                        if (IsKeyPressed(KEY_E)) {
-                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act3_voice.json");
-                            return;
-                        }
-                    } else {
-                        promptText = "Exit is locked (Explore more memories first)";
-                    }
-                } else if (curAct == 4) {
-                    if (ActManager::Get().CanUseExitDoor()) {
-                        promptText = "Press [E] to Step Through Exit";
-                        if (IsKeyPressed(KEY_E)) {
-                            SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("the_door"));
-                            return;
-                        }
-                    } else {
-                        promptText = "Exit is locked (Find the Windshield Fragment)";
-                    }
+                } else {
+                    promptText = "Exit is locked (Explore more memories first)";
                 }
             } else if (door.targetScene == "act5_choice") {
                 promptText = "Press [E] to open THE DOOR";
@@ -504,10 +492,9 @@ void DynamicScene::Draw() {
         }
     }
 
-    // Scene Header Title with Act Name
+    // Scene Header Title
     if (sceneId != "the_door") {
-        std::string fullTitle = ActManager::Get().GetActTitle() + "   |   " + title;
-        ResourceManager::DrawGameText(fullTitle.c_str(), 40, 40, 44, DARKGRAY);
+        ResourceManager::DrawGameText(title.c_str(), 40, 40, 44, DARKGRAY);
     }
 
     // Draw Doors
@@ -555,6 +542,22 @@ void DynamicScene::Draw() {
         EndShaderMode();
     } else {
         player.Draw();
+    }
+
+    // Draw Pain Vignette and Screen Darkness overlay during exit repulsion
+    if (isExitDistortionActive) {
+        float pulse = (sinf(exitDistortionTimer * 16.0f) + 1.0f) * 0.5f;
+
+        // Heavy red & black pain pulse
+        DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.45f + pulse * 0.25f));
+        DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(RED, 0.15f + pulse * 0.2f));
+
+        // Dark vignette edges
+        int borderThickness = 120 + (int)(pulse * 40.0f);
+        DrawRectangle(0, 0, (int)screenWidth, borderThickness, Fade(BLACK, 0.85f));
+        DrawRectangle(0, (int)screenHeight - borderThickness, (int)screenWidth, borderThickness, Fade(BLACK, 0.85f));
+        DrawRectangle(0, 0, borderThickness, (int)screenHeight, Fade(BLACK, 0.85f));
+        DrawRectangle((int)screenWidth - borderThickness, 0, borderThickness, (int)screenHeight, Fade(BLACK, 0.85f));
     }
 
     if (sceneShader.id != 0) {

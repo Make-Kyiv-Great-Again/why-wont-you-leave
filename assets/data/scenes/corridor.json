@@ -57,7 +57,7 @@
     {
       "artifact_id": "car_keys",
       "name": "Car Keys",
-      "rect": { "x": 280.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "rect": { "x": 320.0, "y": 680.0, "width": 70.0, "height": 70.0 },
       "color": "#D4AF37",
       "border_color": "#8C721E",
       "dialogue_file": "assets/data/dialogues/car_keys.json"
@@ -65,7 +65,7 @@
     {
       "artifact_id": "photo_other_man",
       "name": "Coat Pocket Photo",
-      "rect": { "x": 380.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "rect": { "x": 440.0, "y": 680.0, "width": 70.0, "height": 70.0 },
       "color": "#4A6B82",
       "border_color": "#203A43",
       "dialogue_file": "assets/data/dialogues/photo_other_man.json"

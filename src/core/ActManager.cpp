@@ -61,23 +61,7 @@ int ActManager::GetRememberedCountInAct(int act) const {
 }
 
 bool ActManager::CanUseExitDoor() const {
-    // In Act 1: allow exit after player has interacted with/remembered at least 2 Act 1 artifacts
-    if (currentAct == 1) {
-        return GetRememberedCountInAct(1) >= 2;
-    }
-    // In Act 2: allow after remembering at least 2 Act 2 artifacts
-    if (currentAct == 2) {
-        return GetRememberedCountInAct(2) >= 2;
-    }
-    // In Act 3: allow after remembering at least 2 Act 3 artifacts
-    if (currentAct == 3) {
-        return GetRememberedCountInAct(3) >= 2;
-    }
-    // In Act 4: exit door is accessed via completing windshield fragment
-    if (currentAct == 4) {
-        return IsArtifactRemembered("windshield_fragment");
-    }
-    return true;
+    return rememberedArtifacts.size() >= 3 || IsArtifactRemembered("windshield_fragment");
 }
 
 Color ActManager::GetActLightingTint() const {

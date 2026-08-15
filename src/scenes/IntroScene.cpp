@@ -41,4 +41,16 @@ void IntroScene::Update(float dt) {
 
 void IntroScene::Draw() {
     ClearBackground(BLACK);
+
+    const char* skipHint = "Press [SPACE / ENTER] to Skip";
+    int fontSize = 28;
+    int textW = ResourceManager::MeasureGameText(skipHint, fontSize);
+
+    float x = 2000.0f - textW - 40.0f;
+    float y = 800.0f - fontSize - 40.0f;
+
+    float pulse = (sinf(timer * 4.0f) + 1.0f) * 0.5f;
+    Color hintColor = Fade(GOLD, 0.65f + pulse * 0.35f);
+
+    ResourceManager::DrawGameText(skipHint, x, y, fontSize, hintColor);
 }
