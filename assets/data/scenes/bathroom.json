@@ -26,12 +26,30 @@
   ],
   "items": [
     {
+      "artifact_id": "toothbrushes",
+      "name": "Two Toothbrushes",
+      "rect": { "x": 420.0, "y": 350.0, "width": 160.0, "height": 200.0 },
+      "dialogue_file": "assets/data/dialogues/toothbrushes.json",
+      "texture": "assets/sprites/items/bathroom/toothbrushes.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
       "artifact_id": "bathroom_toilet",
       "name": "Toilet",
-      "rect": { "x": 1270.0, "y": 480.0, "width": 300.0, "height": 280.0 },
+      "rect": { "x": 1320.0, "y": 480.0, "width": 300.0, "height": 280.0 },
       "dialogue_file": "assets/data/dialogues/bathroom_toilet.json",
       "is_visible": false,
       "is_memory_artifact": false
+    },
+    {
+      "artifact_id": "medicine",
+      "name": "Sleeping Pills",
+      "rect": { "x": 610.0, "y": 335.0, "width": 160.0, "height": 220.0 },
+      "dialogue_file": "assets/data/dialogues/medicine.json",
+      "texture": "assets/sprites/items/bathroom/medicine.png",
+      "is_visible": false,
+      "is_memory_artifact": true
     }
   ]
 }

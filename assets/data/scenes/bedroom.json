@@ -26,9 +26,36 @@
   ],
   "items": [
     {
+      "artifact_id": "travel_bag",
+      "name": "Grace's Suitcase",
+      "rect": { "x": 370.0, "y": 635.0, "width": 160.0, "height": 160.0 },
+      "dialogue_file": "assets/data/dialogues/travel_bag.json",
+      "texture": "assets/sprites/items/bedroom/travel_bag.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
+      "artifact_id": "diary",
+      "name": "Grace's Diary",
+      "rect": { "x": 1150.0, "y": 300.0, "width": 180.0, "height": 220.0 },
+      "dialogue_file": "assets/data/dialogues/diary.json",
+      "texture": "assets/sprites/items/bedroom/20_diary.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
+      "artifact_id": "accident_info",
+      "name": "Accident Report",
+      "rect": { "x": 840.0, "y": 450.0, "width": 160.0, "height": 220.0 },
+      "dialogue_file": "assets/data/dialogues/accident_info.json",
+      "texture": "assets/sprites/items/bedroom/accident_info.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
       "artifact_id": "bedroom_mirror",
       "name": "Mirror",
-      "rect": { "x": 1380.0, "y": 500.0, "width": 140.0, "height": 260.0 },
+      "rect": { "x": 1500.0, "y": 400.0, "width": 140.0, "height": 260.0 },
       "dialogue_file": "assets/data/dialogues/bedroom_mirror.json",
       "is_visible": false,
       "is_memory_artifact": false

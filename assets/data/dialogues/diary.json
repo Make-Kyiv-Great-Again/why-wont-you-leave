@@ -1,0 +1,77 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Grace's diary...",
+      "is_blackout": false,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "Today we argued again.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Grace",
+      "text": "Sometimes I think Evan is more afraid of losing me than he is capable of loving me.",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "And I understand him. I'm afraid too.",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Grace",
+      "text": "But I don't want us to wake up one day and realize that we've spent all this time just holding each other in place.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Grace",
+      "text": "I want us to be able to be together and still remain separate people. Maybe that's what real love is.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Grace",
+      "text": "If I leave, I want him to know: I'm not running away from him. I just want us to have a future where we can both breathe.",
+      "is_blackout": true,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Voice",
+      "text": "She wrote that when she was angry with you.",
+      "is_blackout": false,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Evan",
+      "text": "But she still loved me.",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

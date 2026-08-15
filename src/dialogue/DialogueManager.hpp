@@ -25,6 +25,7 @@ private:
 
     bool isActive = false;
     bool isMemoryMode = false;
+    float blackoutAlpha = 0.0f;
     std::string activeArtifactId = "";
     std::string activeScriptPath = "";
     DialogueTree currentTree;

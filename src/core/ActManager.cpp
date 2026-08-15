@@ -38,12 +38,22 @@ void ActManager::MarkArtifactRemembered(const std::string& artifactId) {
     VanishArtifact(artifactId);
 }
 
+void ActManager::UnmarkArtifactRemembered(const std::string& artifactId) {
+    rememberedArtifacts.erase(artifactId);
+    vanishedArtifacts.erase(artifactId);
+    MemoryManager::Get().SetRemembered(artifactId, false);
+}
+
 bool ActManager::IsArtifactRemembered(const std::string& artifactId) const {
     return rememberedArtifacts.find(artifactId) != rememberedArtifacts.end();
 }
 
 void ActManager::VanishArtifact(const std::string& artifactId) {
     vanishedArtifacts.insert(artifactId);
+}
+
+void ActManager::RestoreArtifact(const std::string& artifactId) {
+    vanishedArtifacts.erase(artifactId);
 }
 
 bool ActManager::IsArtifactVanished(const std::string& artifactId) const {
@@ -97,28 +107,19 @@ bool ActManager::IsMonochromeAct() const {
 }
 
 int ActManager::GetArtifactAct(const std::string& artifactId) {
-    if (artifactId == "photo_evan_grace" || artifactId == "travel_bag" || 
-        artifactId == "grace_medicine" || artifactId == "car_keys" || artifactId == "torn_envelope") {
+    if (artifactId == "photo_of_couple" || artifactId == "travel_bag" || 
+        artifactId == "medicine" || artifactId == "car_keys" || artifactId == "diary" ||
+        artifactId == "accident_info" || artifactId == "broken_plate" || artifactId == "guitar" ||
+        artifactId == "toothbrushes" || artifactId == "job_letter") {
         return 1;
-    }
-    if (artifactId == "phone" || artifactId == "acceptance_letter" || 
-        artifactId == "photo_other_man" || artifactId == "bank_receipt" || artifactId == "anniversary_note") {
-        return 2;
-    }
-    if (artifactId == "unsent_letter" || artifactId == "ticket" || 
-        artifactId == "spare_key" || artifactId == "hotel_reservation") {
-        return 3;
-    }
-    if (artifactId == "hospital_bracelet" || artifactId == "windshield_fragment") {
-        return 4;
     }
     return 1;
 }
 
 bool ActManager::IsArtifactTrue(const std::string& artifactId) {
-    if (artifactId == "grace_medicine" || artifactId == "photo_other_man" || 
-        artifactId == "anniversary_note" || artifactId == "spare_key" || artifactId == "hotel_reservation") {
-        return false;
+    if (artifactId == "photo_of_couple" || artifactId == "broken_plate" || 
+        artifactId == "guitar" || artifactId == "toothbrushes" || artifactId == "medicine") {
+        return false; // Optional / Unnecessary artifacts
     }
-    return true;
+    return true; // Required artifacts (travel_bag, job_letter, car_keys, diary, accident_info)
 }

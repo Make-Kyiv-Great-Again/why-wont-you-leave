@@ -1,0 +1,77 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "You're not sleeping well again?",
+      "is_blackout": true,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "A little.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "Why didn't you tell me?",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "Because you'd start worrying.",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Evan",
+      "text": "Of course I'd worry.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Grace",
+      "text": "Exactly. It's okay.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Evan",
+      "text": "She said she was okay.",
+      "is_blackout": false,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Voice",
+      "text": "She didn't want to worry you. You should have noticed.",
+      "is_blackout": false,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Evan",
+      "text": "I should have...",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

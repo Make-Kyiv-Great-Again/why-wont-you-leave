@@ -1,0 +1,69 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Grace's favorite guitar melody...",
+      "is_blackout": false,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "That's terrible.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "I'm learning.",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "You've been learning for two years.",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Evan",
+      "text": "At least I'm consistent.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Grace",
+      "text": "Play it again. I like listening to you.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Evan",
+      "text": "She always said things like that.",
+      "is_blackout": false,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Voice",
+      "text": "You can play for her again. Here. Just stay.",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

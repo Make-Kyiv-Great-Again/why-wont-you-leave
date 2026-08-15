@@ -14,11 +14,12 @@ public:
     DialogueTree dialogue;
     std::string dialogueFile;
     Sprite sprite;
-    bool isVisible = true;
+    bool isVisible = false;
+    bool isMemoryArtifact = true;
 
-    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue, bool isVisible = true);
-    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, bool isVisible = true);
-    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite, bool isVisible = true);
+    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue, bool isVisible = false, bool isMemoryArtifact = true);
+    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, bool isVisible = false, bool isMemoryArtifact = true);
+    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite, bool isVisible = false, bool isMemoryArtifact = true);
 
     bool CheckCollision(const Rectangle& playerRect) const;
     void Interact();

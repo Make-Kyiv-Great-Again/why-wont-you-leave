@@ -4,14 +4,14 @@
 #include "core/ResourceManager.hpp"
 #include <cmath>
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue, bool isVisible)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue), isVisible(isVisible) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue, bool isVisible, bool isMemoryArtifact)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue), isVisible(isVisible), isMemoryArtifact(isMemoryArtifact) {}
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, bool isVisible)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), isVisible(isVisible) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, bool isVisible, bool isMemoryArtifact)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), isVisible(isVisible), isMemoryArtifact(isMemoryArtifact) {}
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite, bool isVisible)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), sprite(sprite), isVisible(isVisible) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite, bool isVisible, bool isMemoryArtifact)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), sprite(sprite), isVisible(isVisible), isMemoryArtifact(isMemoryArtifact) {}
 
 bool InteractableItem::CheckCollision(const Rectangle& playerRect) const {
     return CheckCollisionRecs(playerRect, rect);

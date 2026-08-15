@@ -15,9 +15,11 @@ public:
 
     // Artifact tracking
     void MarkArtifactRemembered(const std::string& artifactId);
+    void UnmarkArtifactRemembered(const std::string& artifactId);
     bool IsArtifactRemembered(const std::string& artifactId) const;
     
     void VanishArtifact(const std::string& artifactId);
+    void RestoreArtifact(const std::string& artifactId);
     bool IsArtifactVanished(const std::string& artifactId) const;
 
     int GetRememberedCountInAct(int act) const;
