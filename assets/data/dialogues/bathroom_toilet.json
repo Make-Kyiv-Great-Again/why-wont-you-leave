@@ -1,0 +1,12 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Nah, I don't really feel like going right now.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

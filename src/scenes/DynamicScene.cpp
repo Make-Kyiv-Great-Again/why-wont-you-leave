@@ -157,15 +157,20 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
                 itemSprite.frameTime = itemJson.value("frame_time", 0.1f);
             }
 
-            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile, itemSprite);
+            bool isVisible = itemJson.value("is_visible", true);
+            bool isMemoryArtifact = itemJson.value("is_memory_artifact", isVisible);
 
-            // Register with MemoryManager
-            int roomId = 0;
-            if (sceneId == "bedroom") roomId = 1;
-            else if (sceneId == "bathroom") roomId = 2;
-            else if (sceneId == "kitchen") roomId = 3;
-            else if (sceneId == "corridor") roomId = 0;
-            MemoryManager::Get().RegisterArtifact(artifactId, name, color, borderColor, roomId);
+            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile, itemSprite, isVisible);
+
+            // Register with MemoryManager only if it is a memory artifact
+            if (isMemoryArtifact) {
+                int roomId = 0;
+                if (sceneId == "bedroom") roomId = 1;
+                else if (sceneId == "bathroom") roomId = 2;
+                else if (sceneId == "kitchen") roomId = 3;
+                else if (sceneId == "corridor") roomId = 0;
+                MemoryManager::Get().RegisterArtifact(artifactId, name, color, borderColor, roomId);
+            }
         }
     }
 
@@ -376,18 +381,20 @@ void DynamicScene::Update(float dt) {
         }
     }
 
-    // Check interaction with Room items
-    for (auto it = items.begin(); it != items.end(); ++it) {
-        if (it->CheckCollision(player.rect)) {
-            activeHoverItem = &(*it);
-            promptText = "Press [E] to Examine " + it->name;
+    // Check interaction with Room items (only if not hovering a door)
+    if (promptText.empty()) {
+        for (auto it = items.begin(); it != items.end(); ++it) {
+            if (it->CheckCollision(player.rect)) {
+                activeHoverItem = &(*it);
+                promptText = "Press [E] to Examine " + it->name;
 
-            if (IsKeyPressed(KEY_E)) {
-                it->Interact();
-                promptText = "";
-                return;
+                if (IsKeyPressed(KEY_E)) {
+                    it->Interact();
+                    promptText = "";
+                    return;
+                }
+                break;
             }
-            break;
         }
     }
 }

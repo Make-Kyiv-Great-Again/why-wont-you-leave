@@ -1,0 +1,19 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Locked. I can't get out.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "I don't understand anything... I feel like I forgot something important.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}
