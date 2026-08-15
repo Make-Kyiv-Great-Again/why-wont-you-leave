@@ -70,6 +70,8 @@ Texture2D ResourceManager::GetTexture(const std::string& filePath) {
     if (tex.id != 0) {
         SetTextureFilter(tex, TEXTURE_FILTER_POINT);
         textureCache[filePath] = tex;
+    } else {
+        textureCache[filePath] = Texture2D{ 0 };
     }
     return tex;
 }

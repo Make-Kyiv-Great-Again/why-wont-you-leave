@@ -22,8 +22,8 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
     LoadFromConfigFile(jsonPath);
 
     // Pause menu button layout (Options & Exit side-by-side in one row)
-    float btnW = 220.0f;
-    float btnH = 85.0f;
+    float btnW = 200.0f;
+    float btnH = 70.0f;
     float gap = 40.0f;
     float rowW = btnW * 2.0f + gap;
     float startX = (screenWidth - rowW) / 2.0f;
@@ -616,15 +616,41 @@ void DynamicScene::DrawInteractionPrompt() {
 
 void DynamicScene::DrawPauseOverlay() {
     // 1. Darken the game screen slightly
-    DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.65f));
+    DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.70f));
 
-    // 2. Pause Header
-    const char* pauseTitle = "GAME PAUSED";
-    int titleW = ResourceManager::MeasureGameText(pauseTitle, 50);
-    ResourceManager::DrawGameText(pauseTitle, (int)(screenWidth - titleW) / 2, 240, 50, GOLD);
+    float time = (float)GetTime();
+
+    // 2. Pause Header (Custom sprite game_paused.png / game_paused.svg with fallback)
+    Texture2D pauseTitleTex = ResourceManager::Get().GetTexture("assets/sprites/game_paused.png");
+    if (pauseTitleTex.id == 0) {
+        pauseTitleTex = ResourceManager::Get().GetTexture("assets/sprites/game_paused.svg");
+    }
+
+    if (pauseTitleTex.id != 0) {
+        float titleW = 550.0f;
+        float titleH = titleW * ((float)pauseTitleTex.height / (float)pauseTitleTex.width);
+        float titleOffset = sinf(time * 1.5f) * 4.0f;
+        Rectangle titleDest = {
+            (screenWidth - titleW) / 2.0f,
+            215.0f + titleOffset,
+            titleW,
+            titleH
+        };
+        DrawTexturePro(
+            pauseTitleTex,
+            Rectangle{ 0, 0, (float)pauseTitleTex.width, (float)pauseTitleTex.height },
+            titleDest,
+            Vector2{ 0, 0 },
+            0.0f,
+            WHITE
+        );
+    } else {
+        const char* pauseTitle = "GAME PAUSED";
+        int titleW = ResourceManager::MeasureGameText(pauseTitle, 48.0f);
+        ResourceManager::DrawGameTextWithOutline(pauseTitle, (screenWidth - titleW) / 2.0f, 225.0f, 48.0f, Color{ 255, 245, 241, 255 }, Color{ 103, 90, 79, 255 }, 2.5f);
+    }
 
     // 3. Helper Lambda to draw SVG pause buttons (NO text overlays)
-    float time = (float)GetTime();
     auto DrawPauseBtn = [&](int index, Rectangle rect, const char* texturePath) {
         bool isSelected = (pauseSelectedBtn == index);
         Texture2D btnTex = ResourceManager::Get().GetTexture(texturePath);
@@ -660,18 +686,82 @@ void DynamicScene::DrawPauseOverlay() {
 
     // Guidance footer
     const char* pauseHint = "Press [ESC] to Resume Gameplay | [A/D / Mouse] to Select";
-    int hintW = ResourceManager::MeasureGameText(pauseHint, 24);
-    ResourceManager::DrawGameText(pauseHint, (int)(screenWidth - hintW) / 2, 700, 24, Fade(WHITE, 0.85f));
+    int hintW = ResourceManager::MeasureGameText(pauseHint, 24.0f);
+    ResourceManager::DrawGameTextWithOutline(pauseHint, (screenWidth - hintW) / 2.0f, 700.0f, 24.0f, Fade(RAYWHITE, 0.85f), BLACK, 1.5f);
 
-    // Options Popup Overlay inside Pause
+    // 4. Options Modal Overlay inside Pause (Horizontally Centered & Styled)
     if (showPauseOptions) {
-        DrawRectangle(400, 200, 1200, 400, Fade(BLACK, 0.92f));
-        DrawRectangleLinesEx(Rectangle{ 400, 200, 1200, 400 }, 4.0f, GOLD);
-        
-        ResourceManager::DrawGameText("OPTIONS / SETTINGS", 760, 250, 40, GOLD);
-        ResourceManager::DrawGameText("- Fullscreen Mode: Press F11 or Alt+Enter at any time", 500, 340, 28, WHITE);
-        ResourceManager::DrawGameText("- Hot Reload Scenes: Press R during gameplay", 500, 390, 28, WHITE);
-        ResourceManager::DrawGameText("Press [Enter] or click Options again to close", 650, 520, 24, GRAY);
+        float cardWidth = 1020.0f;
+        float cardHeight = 500.0f;
+        float cardX = (screenWidth - cardWidth) / 2.0f;
+        float cardY = (screenHeight - cardHeight) / 2.0f;
+
+        // Dim background backdrop
+        DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.55f));
+
+        // Outer & Inner Modal Frame
+        DrawRectangle((int)cardX, (int)cardY, (int)cardWidth, (int)cardHeight, Fade(Color{ 10, 10, 14, 255 }, 0.96f));
+        DrawRectangleLinesEx(Rectangle{ cardX, cardY, cardWidth, cardHeight }, 3.0f, Fade(GOLD, 0.85f));
+        DrawRectangleLinesEx(Rectangle{ cardX + 6.0f, cardY + 6.0f, cardWidth - 12.0f, cardHeight - 12.0f }, 1.5f, Fade(LIGHTGRAY, 0.30f));
+
+        // Header Title
+        const char* optHeader = "✦ SETTINGS & CONTROLS ✦";
+        int headerW = ResourceManager::MeasureGameText(optHeader, 36.0f);
+        ResourceManager::DrawGameTextWithOutline(optHeader, (screenWidth - headerW) / 2.0f, cardY + 28.0f, 36.0f, GOLD, BLACK, 2.0f);
+
+        DrawLineEx(Vector2{ cardX + 60.0f, cardY + 76.0f }, Vector2{ cardX + cardWidth - 60.0f, cardY + 76.0f }, 2.0f, Fade(GOLD, 0.40f));
+
+        // Controls Grid (2 Columns x 3 Rows)
+        struct ControlItem {
+            std::string key;
+            std::string desc;
+        };
+
+        std::vector<ControlItem> col1 = {
+            { "A / D  or  <- / ->", "Move Character" },
+            { "E", "Inspect Item / Door" },
+            { "Q  (Hold)", "Collect Story Memory" }
+        };
+
+        std::vector<ControlItem> col2 = {
+            { "TAB", "Memory Archive" },
+            { "F11  /  Alt+Enter", "Toggle Fullscreen" },
+            { "ESC", "Pause / Resume" }
+        };
+
+        float startContentY = cardY + 100.0f;
+        float rowHeight = 92.0f;
+        float colWidth = 430.0f;
+
+        auto DrawControlColumn = [&](const std::vector<ControlItem>& list, float colX) {
+            for (size_t i = 0; i < list.size(); i++) {
+                float rowY = startContentY + (float)i * rowHeight;
+                Rectangle rowBox = { colX, rowY, colWidth, 74.0f };
+
+                DrawRectangleRec(rowBox, Fade(WHITE, 0.04f));
+                DrawRectangleLinesEx(rowBox, 1.5f, Fade(LIGHTGRAY, 0.20f));
+
+                // Key Badge
+                int keyW = ResourceManager::MeasureGameText(list[i].key.c_str(), 24.0f);
+                Rectangle keyRect = { colX + 16.0f, rowY + 18.0f, (float)keyW + 22.0f, 38.0f };
+                DrawRectangleRec(keyRect, Fade(BLACK, 0.75f));
+                DrawRectangleLinesEx(keyRect, 2.0f, Fade(GOLD, 0.70f));
+                ResourceManager::DrawGameTextWithOutline(list[i].key.c_str(), colX + 27.0f, rowY + 24.0f, 24.0f, GOLD, BLACK, 1.5f);
+
+                // Description
+                float descX = colX + 16.0f + keyRect.width + 16.0f;
+                ResourceManager::DrawGameTextWithOutline(list[i].desc.c_str(), descX, rowY + 26.0f, 22.0f, RAYWHITE, BLACK, 1.5f);
+            }
+        };
+
+        DrawControlColumn(col1, cardX + 50.0f);
+        DrawControlColumn(col2, cardX + 540.0f);
+
+        // Footer Hint
+        float alpha = 0.6f + 0.4f * sinf(time * 4.0f);
+        const char* closeHint = "Press [Enter], [ESC], or Click to Close";
+        int closeW = ResourceManager::MeasureGameText(closeHint, 24.0f);
+        ResourceManager::DrawGameTextWithOutline(closeHint, (screenWidth - closeW) / 2.0f, cardY + cardHeight - 48.0f, 24.0f, Fade(GOLD, alpha), BLACK, 1.5f);
     }
 }
 
