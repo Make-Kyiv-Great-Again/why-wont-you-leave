@@ -2,6 +2,7 @@
 #include "scenes/RoomScene.hpp"
 #include "core/SceneManager.hpp"
 #include "dialogue/DialogueManager.hpp"
+#include "core/MemoryManager.hpp"
 
 CorridorScene::CorridorScene(float spawnPlayerX)
     : screenWidth(2000.0f), screenHeight(800.0f), groundY(660.0f), player(spawnPlayerX, 660.0f) {
@@ -11,6 +12,12 @@ CorridorScene::CorridorScene(float spawnPlayerX)
 }
 
 void CorridorScene::Update(float dt) {
+    SceneManager::Get().SetTabPressed(IsKeyDown(KEY_TAB));
+
+    if (IsKeyDown(KEY_TAB)) {
+        return;
+    }
+
     DialogueManager::Get().Update(dt);
     if (DialogueManager::Get().IsActive()) {
         promptText = "";
@@ -56,15 +63,20 @@ void CorridorScene::Draw() {
     player.Draw();
 
     // Interaction Banner / Controls Guidance
-    if (!DialogueManager::Get().IsActive()) {
+    if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB)) {
         if (!promptText.empty()) {
             int textWidth = MeasureText(promptText.c_str(), 40);
             int bannerX = ((int)screenWidth - textWidth - 80) / 2;
             DrawRectangle(bannerX, 690, textWidth + 80, 70, Fade(DARKGRAY, 0.85f));
             DrawText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 704, 40, WHITE);
         } else {
-            DrawText("Controls: [A/D] or [Left/Right] to Move | [E] to Interact", 40, 736, 32, GRAY);
+            DrawText("Controls: [A/D] or [Left/Right] to Move | [E] to Enter Doors", 40, 736, 30, GRAY);
         }
+
+        // Persistent Tab hint
+        const char* tabHint = "[Hold TAB] Memory Archive";
+        int tabW = MeasureText(tabHint, 24);
+        DrawText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
     }
 
     // Draw Dialogue Overlay

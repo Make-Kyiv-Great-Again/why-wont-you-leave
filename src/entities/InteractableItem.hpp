@@ -5,13 +5,14 @@
 
 class InteractableItem {
 public:
+    std::string artifactId;
     Rectangle rect;
     Color color;
     Color borderColor;
     std::string name;
     DialogueTree dialogue;
 
-    InteractableItem(Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue);
+    InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue);
 
     bool CheckCollision(const Rectangle& playerRect) const;
     void Interact();

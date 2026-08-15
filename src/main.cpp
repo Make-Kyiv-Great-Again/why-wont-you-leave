@@ -22,6 +22,7 @@ int main() {
 
     InitWindow(screenWidth, screenHeight, "2D Room Navigation Game");
 
+    SceneManager::Get().Init(screenWidth, screenHeight);
     SceneManager::Get().ChangeScene(std::make_unique<CorridorScene>());
 
 #if defined(PLATFORM_WEB)

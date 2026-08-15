@@ -1,13 +1,15 @@
 #pragma once
 #include "dialogue/Dialogue.hpp"
 #include "raylib.h"
+#include <string>
 
 class DialogueManager {
 public:
     static DialogueManager& Get();
 
-    void StartDialogue(const DialogueTree& tree);
+    void StartDialogue(const DialogueTree& tree, bool isMemory = false, const std::string& artifactId = "");
     bool IsActive() const;
+    bool IsMemoryMode() const;
     void Update(float dt);
     void Draw();
 
@@ -20,6 +22,8 @@ private:
     void DrawWrappedText(const char* text, int posX, int posY, int fontSize, int maxLineWidth, Color color);
 
     bool isActive = false;
+    bool isMemoryMode = false;
+    std::string activeArtifactId = "";
     DialogueTree currentTree;
     const DialogueNode* currentNode = nullptr;
     int selectedOption = 0;

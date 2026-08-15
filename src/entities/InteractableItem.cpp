@@ -1,23 +1,46 @@
 #include "entities/InteractableItem.hpp"
 #include "dialogue/DialogueManager.hpp"
+#include "core/MemoryManager.hpp"
+#include <cmath>
 
-InteractableItem::InteractableItem(Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue)
-    : rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue) {}
 
 bool InteractableItem::CheckCollision(const Rectangle& playerRect) const {
     return CheckCollisionRecs(playerRect, rect);
 }
 
 void InteractableItem::Interact() {
-    DialogueManager::Get().StartDialogue(dialogue);
+    DialogueManager::Get().StartDialogue(dialogue, false, artifactId);
 }
 
 void InteractableItem::Draw() const {
-    // Draw the cube
-    DrawRectangleRec(rect, color);
-    DrawRectangleLinesEx(rect, 3, borderColor);
+    bool remembered = MemoryManager::Get().IsRemembered(artifactId);
+    float time = (float)GetTime();
 
-    // Draw item name label floating above
-    int labelWidth = MeasureText(name.c_str(), 22);
-    DrawText(name.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 32), 22, DARKGRAY);
+    if (remembered) {
+        // Glowing halo
+        float haloPulse = (sinf(time * 3.0f) + 1.0f) * 0.5f;
+        Rectangle haloRect = { rect.x - 8.0f - haloPulse * 4.0f, rect.y - 8.0f - haloPulse * 4.0f,
+                               rect.width + 16.0f + haloPulse * 8.0f, rect.height + 16.0f + haloPulse * 8.0f };
+        DrawRectangleRec(haloRect, Fade(color, 0.25f + haloPulse * 0.15f));
+        DrawRectangleLinesEx(haloRect, 2.0f, Fade(GOLD, 0.6f));
+
+        // Cube body
+        DrawRectangleRec(rect, color);
+        DrawRectangleLinesEx(rect, 3.0f, GOLD);
+
+        // Label above
+        std::string labelText = name + " ✦";
+        int labelWidth = MeasureText(labelText.c_str(), 22);
+        DrawText(labelText.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 34), 22, GOLD);
+    } else {
+        // Normal cube
+        DrawRectangleRec(rect, color);
+        DrawRectangleLinesEx(rect, 3.0f, borderColor);
+
+        // Label above
+        int labelWidth = MeasureText(name.c_str(), 22);
+        DrawText(name.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 32), 22, DARKGRAY);
+    }
 }
