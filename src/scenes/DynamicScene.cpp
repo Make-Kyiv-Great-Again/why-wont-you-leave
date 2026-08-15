@@ -58,9 +58,9 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
 }
 
 DynamicScene::~DynamicScene() {
-    Music gameMusic = ResourceManager::Get().GetMusic("assets/sounds/game_sound.mp3");
-    if (gameMusic.ctxData != nullptr && IsMusicStreamPlaying(gameMusic)) {
-        StopMusicStream(gameMusic);
+    Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+    if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+        StopSound(walkingSfx);
     }
 }
 
