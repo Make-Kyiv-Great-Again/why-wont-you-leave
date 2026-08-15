@@ -31,6 +31,7 @@ public:
 
     // Custom text rendering utilities using game font
     static void DrawGameText(const char* text, float posX, float posY, float fontSize, Color color);
+    static void DrawGameTextWithOutline(const char* text, float posX, float posY, float fontSize, Color textColor, Color outlineColor, float outlineSize = 2.0f);
     static int MeasureGameText(const char* text, float fontSize);
 
     // Unload cached assets

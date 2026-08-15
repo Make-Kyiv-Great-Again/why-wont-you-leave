@@ -533,26 +533,26 @@ void DynamicScene::DrawInteractionPrompt() {
     Texture2D btnETex = ResourceManager::Get().GetTexture("assets/sprites/button_E.png");
     Texture2D btnQTex = ResourceManager::Get().GetTexture("assets/sprites/button_Q.png");
 
-    float btnSize = 48.0f;
-    int fontSize = 28;
-    float gap = 16.0f;
-    float midGap = 24.0f;
-    float centerY = 730.0f;
+    float btnSize = 42.0f;
+    int fontSize = 30;
+    float gap = 14.0f;
+    float midGap = 20.0f;
+    float centerY = 735.0f;
 
     if (activeHoverItem != nullptr) {
         if (activeHoverItem->isMemoryArtifact) {
             std::string qDesc = "Take Memory";
             std::string eDesc = "Inspect " + activeHoverItem->name;
 
-            int qW = ResourceManager::MeasureGameText(qDesc.c_str(), fontSize);
-            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), fontSize);
+            int qW = ResourceManager::MeasureGameText(qDesc.c_str(), (float)fontSize);
+            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), (float)fontSize);
 
             float totalW = qW + gap + btnSize + midGap + btnSize + gap + eW;
             float startX = (screenWidth - totalW) / 2.0f;
 
-            // 1. Button Q Description
-            Color qColor = (holdQTimer > 0.05f) ? GOLD : RAYWHITE;
-            ResourceManager::DrawGameText(qDesc.c_str(), (int)startX, (int)(centerY - fontSize / 2.0f), fontSize, qColor);
+            // 1. Button Q Description (White with Black Outline)
+            Color qColor = (holdQTimer > 0.05f) ? GOLD : WHITE;
+            ResourceManager::DrawGameTextWithOutline(qDesc.c_str(), startX, centerY - fontSize / 2.0f, (float)fontSize, qColor, BLACK, 2.0f);
 
             // 2. Button Q Sprite
             float btnQX = startX + qW + gap;
@@ -573,13 +573,13 @@ void DynamicScene::DrawInteractionPrompt() {
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
 
-            // 4. Button E Description
+            // 4. Button E Description (White with Black Outline)
             float eTextX = btnEX + btnSize + gap;
-            ResourceManager::DrawGameText(eDesc.c_str(), (int)eTextX, (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(eDesc.c_str(), eTextX, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         } else {
             // Non-memory artifact item (e.g. mirror, oven, toilet)
             std::string eDesc = "Examine " + activeHoverItem->name;
-            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), fontSize);
+            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), (float)fontSize);
             float totalW = btnSize + gap + eW;
             float startX = (screenWidth - totalW) / 2.0f;
 
@@ -588,7 +588,7 @@ void DynamicScene::DrawInteractionPrompt() {
                                Rectangle{ startX, centerY - btnSize / 2.0f, btnSize, btnSize },
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
-            ResourceManager::DrawGameText(eDesc.c_str(), (int)(startX + btnSize + gap), (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(eDesc.c_str(), startX + btnSize + gap, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         }
     } else if (!promptText.empty()) {
         const std::string prefix = "Press [E] to ";
@@ -596,7 +596,7 @@ void DynamicScene::DrawInteractionPrompt() {
             std::string actionDesc = promptText.substr(prefix.length());
             if (!actionDesc.empty()) actionDesc[0] = (char)toupper(actionDesc[0]);
             
-            int textW = ResourceManager::MeasureGameText(actionDesc.c_str(), fontSize);
+            int textW = ResourceManager::MeasureGameText(actionDesc.c_str(), (float)fontSize);
             float totalW = btnSize + gap + textW;
             float startX = (screenWidth - totalW) / 2.0f;
 
@@ -605,11 +605,11 @@ void DynamicScene::DrawInteractionPrompt() {
                                Rectangle{ startX, centerY - btnSize / 2.0f, btnSize, btnSize },
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
-            ResourceManager::DrawGameText(actionDesc.c_str(), (int)(startX + btnSize + gap), (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(actionDesc.c_str(), startX + btnSize + gap, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         } else {
-            int textW = ResourceManager::MeasureGameText(promptText.c_str(), fontSize);
+            int textW = ResourceManager::MeasureGameText(promptText.c_str(), (float)fontSize);
             float startX = (screenWidth - textW) / 2.0f;
-            ResourceManager::DrawGameText(promptText.c_str(), (int)startX, (int)(centerY - fontSize / 2.0f), fontSize, GOLD);
+            ResourceManager::DrawGameTextWithOutline(promptText.c_str(), startX, centerY - fontSize / 2.0f, (float)fontSize, GOLD, BLACK, 2.0f);
         }
     }
 }
