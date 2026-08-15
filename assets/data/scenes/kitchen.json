@@ -31,5 +31,14 @@
       "is_visible": false
     }
   ],
-  "items": []
+  "items": [
+    {
+      "artifact_id": "kitchen_oven",
+      "name": "Oven",
+      "rect": { "x": 1240.0, "y": 450.0, "width": 220.0, "height": 310.0 },
+      "dialogue_file": "assets/data/dialogues/kitchen_oven.json",
+      "is_visible": false,
+      "is_memory_artifact": false
+    }
+  ]
 }

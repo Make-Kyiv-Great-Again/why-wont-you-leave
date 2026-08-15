@@ -31,5 +31,14 @@
       "is_visible": false
     }
   ],
-  "items": []
+  "items": [
+    {
+      "artifact_id": "corridor_locked_door",
+      "name": "Locked Door",
+      "rect": { "x": 760.0, "y": 270.0, "width": 260.0, "height": 490.0 },
+      "dialogue_file": "assets/data/dialogues/corridor_locked_door.json",
+      "is_visible": false,
+      "is_memory_artifact": false
+    }
+  ]
 }

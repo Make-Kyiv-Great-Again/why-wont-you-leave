@@ -1,0 +1,19 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Yeah, that's me.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "I feel good in my home... Really good.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

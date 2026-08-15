@@ -1,0 +1,19 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Mmmmmm, my favorite pie.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "Grace used to bake this pie often. It smells delicious.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

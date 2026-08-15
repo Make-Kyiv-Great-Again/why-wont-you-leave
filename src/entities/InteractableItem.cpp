@@ -4,14 +4,14 @@
 #include "core/ResourceManager.hpp"
 #include <cmath>
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue, bool isVisible)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue), isVisible(isVisible) {}
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, bool isVisible)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), isVisible(isVisible) {}
 
-InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite)
-    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), sprite(sprite) {}
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite, bool isVisible)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), sprite(sprite), isVisible(isVisible) {}
 
 bool InteractableItem::CheckCollision(const Rectangle& playerRect) const {
     return CheckCollisionRecs(playerRect, rect);
@@ -32,6 +32,8 @@ void InteractableItem::Update(float dt) {
 }
 
 void InteractableItem::Draw() const {
+    if (!isVisible) return; // Clean background art for ambient inspection objects
+
     bool remembered = MemoryManager::Get().IsRemembered(artifactId);
     float time = (float)GetTime();
 

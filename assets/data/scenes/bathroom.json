@@ -18,11 +18,20 @@
   "doors": [
     {
       "label": "Kitchen",
-      "rect": { "x": 30.0, "y": 200.0, "width": 150.0, "height": 560.0 },
+      "rect": { "x": 40.0, "y": 200.0, "width": 240.0, "height": 560.0 },
       "target_scene": "kitchen",
       "target_door": "Bathroom",
       "is_visible": false
     }
   ],
-  "items": []
+  "items": [
+    {
+      "artifact_id": "bathroom_toilet",
+      "name": "Toilet",
+      "rect": { "x": 1270.0, "y": 480.0, "width": 300.0, "height": 280.0 },
+      "dialogue_file": "assets/data/dialogues/bathroom_toilet.json",
+      "is_visible": false,
+      "is_memory_artifact": false
+    }
+  ]
 }
