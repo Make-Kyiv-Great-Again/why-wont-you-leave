@@ -1,5 +1,11 @@
 #pragma once
 #include "raylib.h"
+#include <string>
+
+enum class PlayerState {
+    Idle,
+    Walking
+};
 
 class Player {
 public:
@@ -7,26 +13,21 @@ public:
     float speed;
     Color color;
 
-    Player(float x = 200.0f, float groundY = 660.0f)
-        : rect{ x, groundY - 200.0f, 80.0f, 200.0f }, speed(700.0f), color(DARKBLUE) {}
+    PlayerState state = PlayerState::Idle;
+    bool facingRight = true;
+    int currentFrame = 0;
+    float frameTimer = 0.0f;
 
-    void Update(float dt, float screenWidth) {
-        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
-            rect.x -= speed * dt;
-        }
-        if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
-            rect.x += speed * dt;
-        }
+    Player(float x = 200.0f, float groundY = 660.0f);
 
-        // Bound within screen limits
-        if (rect.x < 0) rect.x = 0;
-        if (rect.x + rect.width > screenWidth) {
-            rect.x = screenWidth - rect.width;
-        }
-    }
+    void Update(float dt, float screenWidth);
+    void Draw() const;
 
-    void Draw() const {
-        DrawRectangleRec(rect, color);
-        DrawRectangleLinesEx(rect, 2, BLACK);
-    }
+private:
+    float idleFrameSpeed = 0.12f;
+    float walkFrameSpeed = 0.08f;
+    int idleFrameCount = 5;
+    int walkFrameCount = 8;
+    float frameWidth = 32.0f;
+    float frameHeight = 48.0f;
 };

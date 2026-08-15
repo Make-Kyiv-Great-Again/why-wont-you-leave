@@ -1,15 +1,16 @@
 {
-  "id": "room2",
-  "title": "ROOM 2",
-  "ground_y": 660.0,
+  "id": "bedroom",
+  "title": "BEDROOM",
+  "ground_y": 760.0,
   "background_color": "#F5F5F5",
-  "controls_hint": "Controls: [A/D] to Move | [E] Inspect | [Hold Q] Remember/Forget",
+  "background_texture": "assets/sprites/bedroom.png",
+  "controls_hint": "",
   "doors": [
     {
       "label": "Corridor",
-      "rect": { "x": 100.0, "y": 420.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 100.0, "y": 520.0, "width": 130.0, "height": 240.0 },
       "target_scene": "corridor",
-      "target_door": "Room 2",
+      "target_door": "Bedroom",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"
@@ -19,7 +20,7 @@
     {
       "artifact_id": "amethyst_core",
       "name": "Amethyst Core",
-      "rect": { "x": 1050.0, "y": 570.0, "width": 90.0, "height": 90.0 },
+      "rect": { "x": 1050.0, "y": 670.0, "width": 90.0, "height": 90.0 },
       "color": "#800080",
       "border_color": "#300030",
       "dialogue_file": "assets/data/dialogues/amethyst_core.json"

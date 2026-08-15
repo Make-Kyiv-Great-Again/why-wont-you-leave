@@ -14,9 +14,9 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
       jsonPath("assets/data/scenes/" + sceneId + ".json"),
       screenWidth(2000.0f),
       screenHeight(800.0f),
-      groundY(660.0f),
+      groundY(760.0f),
       backgroundColor(RAYWHITE),
-      player(spawnPlayerX >= 0.0f ? spawnPlayerX : 200.0f, 660.0f) {
+      player(spawnPlayerX >= 0.0f ? spawnPlayerX : 200.0f, 760.0f) {
     LoadFromConfigFile(jsonPath);
 
     // Pause menu button layout (Options & Exit side-by-side in one row)
@@ -410,9 +410,6 @@ void DynamicScene::Draw() {
         }
     }
 
-    // Floor Line
-    DrawLine(0, (int)groundY, (int)screenWidth, (int)groundY, DARKGRAY);
-
     // Scene Header Title
     ResourceManager::DrawGameText(title.c_str(), 40, 40, 48, DARKGRAY);
 
@@ -455,20 +452,14 @@ void DynamicScene::Draw() {
         DrawHoldQGauge(gaugePos, holdQTimer / holdQThreshold, isRem);
     }
 
-    // Interaction Banner / Controls Guidance
+    // Interaction Banner
     if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB) && !isPaused) {
         if (!promptText.empty()) {
             int textWidth = ResourceManager::MeasureGameText(promptText.c_str(), 36);
             int bannerX = ((int)screenWidth - textWidth - 80) / 2;
             DrawRectangle(bannerX, 690, textWidth + 80, 70, Fade(DARKGRAY, 0.85f));
             ResourceManager::DrawGameText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 706, 36, WHITE);
-        } else {
-            ResourceManager::DrawGameText(controlsHint.c_str(), 40, 736, 30, GRAY);
         }
-
-        const char* tabHint = "[Hold TAB] Memory Archive | [ESC] Pause | [R] Reload";
-        int tabW = ResourceManager::MeasureGameText(tabHint, 24);
-        ResourceManager::DrawGameText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
     }
 
     // Draw Dialogue Overlay

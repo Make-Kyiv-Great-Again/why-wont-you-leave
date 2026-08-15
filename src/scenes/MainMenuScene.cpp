@@ -82,7 +82,10 @@ void MainMenuScene::Draw() {
     float screenHeight = 800.0f;
 
     // Draw Main Menu Background Sprite
-    Texture2D bgTex = ResourceManager::Get().GetTexture("assets/sprites/mian-menu.png");
+    Texture2D bgTex = ResourceManager::Get().GetTexture("assets/sprites/main-menu.png");
+    if (bgTex.id == 0) {
+        bgTex = ResourceManager::Get().GetTexture("assets/sprites/mian-menu.png");
+    }
     if (bgTex.id != 0) {
         DrawTexturePro(
             bgTex,
