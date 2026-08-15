@@ -272,6 +272,10 @@ void DynamicScene::Update(float dt) {
 
     // If game is paused, only update pause menu
     if (isPaused) {
+        Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+        if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+            StopSound(walkingSfx);
+        }
         UpdatePauseMenu(dt);
         return;
     }
@@ -314,6 +318,11 @@ void DynamicScene::Update(float dt) {
     // Pause if Tab memory archive is open
     if (IsKeyDown(KEY_TAB)) {
         holdQTimer = 0.0f;
+        player.state = PlayerState::Idle;
+        Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+        if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+            StopSound(walkingSfx);
+        }
         return;
     }
 
@@ -325,6 +334,11 @@ void DynamicScene::Update(float dt) {
         promptText = "";
         holdQTimer = 0.0f;
         activeHoverItem = nullptr;
+        player.state = PlayerState::Idle;
+        Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+        if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+            StopSound(walkingSfx);
+        }
         return;
     }
 
@@ -337,6 +351,10 @@ void DynamicScene::Update(float dt) {
             player.ForceMove(220.0f * dt, dt);
         } else {
             player.state = PlayerState::Idle;
+            Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+            if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+                StopSound(walkingSfx);
+            }
         }
 
         // Step 2: Once repulsion & pain sequence ends, trigger dialogue or act transition

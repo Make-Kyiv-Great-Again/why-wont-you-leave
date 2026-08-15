@@ -6,6 +6,13 @@ Player::Player(float x, float groundY)
       speed(580.0f),
       color(DARKBLUE) {}
 
+Player::~Player() {
+    Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+    if (walkingSfx.frameCount > 0 && IsSoundPlaying(walkingSfx)) {
+        StopSound(walkingSfx);
+    }
+}
+
 void Player::Update(float dt, float screenWidth) {
     PlayerState previousState = state;
     bool isMoving = false;
@@ -29,6 +36,19 @@ void Player::Update(float dt, float screenWidth) {
 
     state = isMoving ? PlayerState::Walking : PlayerState::Idle;
 
+    Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+    if (walkingSfx.frameCount > 0) {
+        if (state == PlayerState::Walking) {
+            if (!IsSoundPlaying(walkingSfx)) {
+                PlaySound(walkingSfx);
+            }
+        } else {
+            if (IsSoundPlaying(walkingSfx)) {
+                StopSound(walkingSfx);
+            }
+        }
+    }
+
     // Reset animation frame on state transition
     if (state != previousState) {
         currentFrame = 0;
@@ -50,6 +70,11 @@ void Player::ForceMove(float dx, float dt) {
     rect.x += dx;
     facingRight = (dx > 0);
     state = PlayerState::Walking;
+
+    Sound walkingSfx = ResourceManager::Get().GetSound("assets/sounds/walking_sound.mp3");
+    if (walkingSfx.frameCount > 0 && !IsSoundPlaying(walkingSfx)) {
+        PlaySound(walkingSfx);
+    }
 
     frameTimer += dt;
     if (frameTimer >= walkFrameSpeed) {

@@ -19,6 +19,7 @@ public:
     float frameTimer = 0.0f;
 
     Player(float x = 200.0f, float groundY = 660.0f);
+    ~Player();
 
     void Update(float dt, float screenWidth);
     void ForceMove(float dx, float dt);
