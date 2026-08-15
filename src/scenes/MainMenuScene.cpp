@@ -35,6 +35,7 @@ void MainMenuScene::Update(float dt) {
     }
 
     Vector2 virtualMouse = SceneManager::Get().GetVirtualMousePosition();
+    int prevSelected = selectedButtonIndex;
 
     // Check mouse hover
     if (CheckCollisionPointRec(virtualMouse, newGameBtnRect)) {
@@ -59,10 +60,24 @@ void MainMenuScene::Update(float dt) {
         if (selectedButtonIndex == 1) selectedButtonIndex = 2;
     }
 
+    if (selectedButtonIndex != prevSelected) {
+        Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+        if (sfx.frameCount > 0) {
+            StopSound(sfx);
+            PlaySound(sfx);
+        }
+    }
+
     bool clickPressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     bool actionPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_E) || clickPressed;
 
     if (actionPressed) {
+        Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+        if (sfx.frameCount > 0) {
+            StopSound(sfx);
+            PlaySound(sfx);
+        }
+
         if (selectedButtonIndex == 0) {
             // New Game or Resume Game
             if (SceneManager::Get().HasSavedGameplayScene()) {

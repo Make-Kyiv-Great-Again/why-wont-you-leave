@@ -216,6 +216,7 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
 
 void DynamicScene::UpdatePauseMenu(float dt) {
     Vector2 virtualMouse = SceneManager::Get().GetVirtualMousePosition();
+    int prevSelected = pauseSelectedBtn;
 
     // Mouse hover check
     if (CheckCollisionPointRec(virtualMouse, pauseOptionsRect)) {
@@ -232,10 +233,24 @@ void DynamicScene::UpdatePauseMenu(float dt) {
         pauseSelectedBtn = 1;
     }
 
+    if (pauseSelectedBtn != prevSelected) {
+        Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+        if (sfx.frameCount > 0) {
+            StopSound(sfx);
+            PlaySound(sfx);
+        }
+    }
+
     bool clickPressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     bool actionPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_E) || clickPressed;
 
     if (actionPressed) {
+        Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+        if (sfx.frameCount > 0) {
+            StopSound(sfx);
+            PlaySound(sfx);
+        }
+
         if (pauseSelectedBtn == 0) {
             // Options
             showPauseOptions = !showPauseOptions;

@@ -158,6 +158,7 @@ void DialogueManager::Update(float dt) {
 
     if (hasOptions) {
         int optCount = (int)currentNode->options.size();
+        int prevSelected = selectedOption;
 
         // Arrow navigation
         if (IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) {
@@ -173,8 +174,22 @@ void DialogueManager::Update(float dt) {
         if (IsKeyPressed(KEY_THREE) || IsKeyPressed(KEY_KP_3)) if (optCount >= 3) { selectedOption = 2; }
         if (IsKeyPressed(KEY_FOUR) || IsKeyPressed(KEY_KP_4)) if (optCount >= 4) { selectedOption = 3; }
 
+        if (selectedOption != prevSelected) {
+            Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+            if (sfx.frameCount > 0) {
+                StopSound(sfx);
+                PlaySound(sfx);
+            }
+        }
+
         // Confirm choice
         if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) {
+            Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+            if (selectSfx.frameCount > 0) {
+                StopSound(selectSfx);
+                PlaySound(selectSfx);
+            }
+
             std::string chosenText = currentNode->options[selectedOption].text;
             if (!activeArtifactId.empty()) {
                 MemoryManager::Get().SaveChoice(activeArtifactId, chosenText);
@@ -328,8 +343,21 @@ void DialogueManager::Draw() {
 
             bool isHovered = CheckCollisionPointRec(mousePos, cardRect);
             if (isHovered) {
-                selectedOption = i;
+                if (selectedOption != i) {
+                    selectedOption = i;
+                    Sound sfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+                    if (sfx.frameCount > 0) {
+                        StopSound(sfx);
+                        PlaySound(sfx);
+                    }
+                }
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+                    if (selectSfx.frameCount > 0) {
+                        StopSound(selectSfx);
+                        PlaySound(selectSfx);
+                    }
+
                     std::string chosenText = currentNode->options[i].text;
                     if (!activeArtifactId.empty()) {
                         MemoryManager::Get().SaveChoice(activeArtifactId, chosenText);
