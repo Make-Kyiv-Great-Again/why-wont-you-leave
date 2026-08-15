@@ -89,6 +89,51 @@ Shader ResourceManager::GetShader(const std::string& filePath) {
     return shader;
 }
 
+Font ResourceManager::GetFont(const std::string& filePath) {
+    if (filePath.empty()) return GetFontDefault();
+
+    auto it = fontCache.find(filePath);
+    if (it != fontCache.end()) {
+        return it->second;
+    }
+
+    Font font = LoadFont(filePath.c_str());
+    if (font.texture.id != 0) {
+        fontCache[filePath] = font;
+    } else {
+        TraceLog(LOG_WARNING, "RESOURCE: Failed to load Font: %s", filePath.c_str());
+    }
+    return font;
+}
+
+Sound ResourceManager::GetSound(const std::string& filePath) {
+    if (filePath.empty()) return Sound{ 0 };
+
+    auto it = soundCache.find(filePath);
+    if (it != soundCache.end()) {
+        return it->second;
+    }
+
+    Sound sound = LoadSound(filePath.c_str());
+    if (sound.frameCount != 0) {
+        soundCache[filePath] = sound;
+    } else {
+        TraceLog(LOG_WARNING, "RESOURCE: Failed to load Sound: %s", filePath.c_str());
+    }
+    return sound;
+}
+
+void ResourceManager::DrawGameText(const char* text, float posX, float posY, float fontSize, Color color) {
+    Font font = ResourceManager::Get().GetFont("assets/fonts/Jersey10-Regular.ttf");
+    DrawTextEx(font, text, Vector2{ posX, posY }, fontSize, 2.0f, color);
+}
+
+int ResourceManager::MeasureGameText(const char* text, float fontSize) {
+    Font font = ResourceManager::Get().GetFont("assets/fonts/Jersey10-Regular.ttf");
+    Vector2 size = MeasureTextEx(font, text, fontSize, 2.0f);
+    return (int)size.x;
+}
+
 void ResourceManager::ClearCache() {
     for (auto& pair : textureCache) {
         UnloadTexture(pair.second);
@@ -99,5 +144,16 @@ void ResourceManager::ClearCache() {
         UnloadShader(pair.second);
     }
     shaderCache.clear();
+
+    for (auto& pair : fontCache) {
+        UnloadFont(pair.second);
+    }
+    fontCache.clear();
+
+    for (auto& pair : soundCache) {
+        UnloadSound(pair.second);
+    }
+    soundCache.clear();
+    
     jsonCache.clear();
 }

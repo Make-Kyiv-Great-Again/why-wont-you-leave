@@ -29,4 +29,10 @@ private:
     const DialogueNode* currentNode = nullptr;
     int selectedOption = 0;
     float pulseTimer = 0.0f;
+
+    // Typing animation variables
+    size_t visibleChars = 0;
+    float typeTimer = 0.0f;
+    float typeSpeed = 0.02f;
+    std::string displayedText = "";
 };
