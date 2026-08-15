@@ -30,6 +30,7 @@ void ActManager::Reset() {
     currentAct = 1;
     rememberedArtifacts.clear();
     vanishedArtifacts.clear();
+    MemoryManager::Get().Reset();
 }
 
 void ActManager::MarkArtifactRemembered(const std::string& artifactId) {
@@ -71,7 +72,15 @@ int ActManager::GetRememberedCountInAct(int act) const {
 }
 
 bool ActManager::CanUseExitDoor() const {
-    return rememberedArtifacts.size() >= 3 || IsArtifactRemembered("windshield_fragment");
+    return rememberedArtifacts.size() >= 5;
+}
+
+bool ActManager::HasAllTrueArtifacts() const {
+    return IsArtifactRemembered("travel_bag") &&
+           IsArtifactRemembered("job_letter") &&
+           IsArtifactRemembered("car_keys") &&
+           IsArtifactRemembered("diary") &&
+           IsArtifactRemembered("accident_info");
 }
 
 Color ActManager::GetActLightingTint() const {

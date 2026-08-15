@@ -361,6 +361,19 @@ void DynamicScene::Update(float dt) {
     // Update dialogue system
     DialogueManager::Get().Update(dt);
 
+    // Handle 5th memory corridor blackout transition
+    if (isCorridorTransitioning) {
+        corridorTransitionTimer += dt;
+        if (corridorTransitionTimer <= 0.45f) {
+            corridorTransitionAlpha = corridorTransitionTimer / 0.45f;
+        } else if (corridorTransitionTimer <= 0.95f) {
+            corridorTransitionAlpha = 1.0f - (corridorTransitionTimer - 0.45f) / 0.50f;
+        } else {
+            corridorTransitionAlpha = 0.0f;
+            isCorridorTransitioning = false;
+        }
+    }
+
     // Freeze player if dialogue is active
     if (DialogueManager::Get().IsActive()) {
         promptText = "";
@@ -486,6 +499,14 @@ void DynamicScene::Update(float dt) {
                                     Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
                                     if (selectSfx.frameCount > 0) PlaySound(selectSfx);
                                 }
+
+                                if (sceneId == "corridor" && MemoryManager::Get().GetRememberedCount() == 5) {
+                                    isCorridorTransitioning = true;
+                                    corridorTransitionTimer = 0.0f;
+                                    corridorTransitionAlpha = 0.0f;
+                                    Sound doorSfx = ResourceManager::Get().GetSound("assets/sounds/door_sound.mp3");
+                                    if (doorSfx.frameCount > 0) PlaySound(doorSfx);
+                                }
                                 promptText = "";
                                 return;
                             }
@@ -493,13 +514,24 @@ void DynamicScene::Update(float dt) {
                     } else {
                         holdQTimer = 0.0f;
                     }
+                } else if (it->artifactId == "corridor_locked_door") {
+                    if (MemoryManager::Get().GetRememberedCount() == 5) {
+                        promptText = "Press [E] to Approach the Open Door";
+                    } else {
+                        promptText = "Press [E] to Examine " + it->name;
+                    }
+                    holdQTimer = 0.0f;
                 } else {
                     promptText = "Press [E] to Examine " + it->name;
                     holdQTimer = 0.0f;
                 }
 
                 if (IsKeyPressed(KEY_E)) {
-                    it->Interact();
+                    if (it->artifactId == "corridor_locked_door" && MemoryManager::Get().GetRememberedCount() == 5) {
+                        DialogueManager::Get().StartDialogueFile("assets/data/dialogues/final_door_choice.json");
+                    } else {
+                        it->Interact();
+                    }
                     promptText = "";
                     return;
                 }
@@ -577,8 +609,11 @@ void DynamicScene::DrawInteractionPrompt() {
             float eTextX = btnEX + btnSize + gap;
             ResourceManager::DrawGameText(eDesc.c_str(), (int)eTextX, (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
         } else {
-            // Non-memory artifact item (e.g. mirror, oven, toilet)
+            // Non-memory artifact item (e.g. mirror, oven, toilet, open door)
             std::string eDesc = "Examine " + activeHoverItem->name;
+            if (activeHoverItem->artifactId == "corridor_locked_door" && MemoryManager::Get().GetRememberedCount() == 5) {
+                eDesc = "Approach the Open Door";
+            }
             int eW = ResourceManager::MeasureGameText(eDesc.c_str(), fontSize);
             float totalW = btnSize + gap + eW;
             float startX = (screenWidth - totalW) / 2.0f;
@@ -685,7 +720,11 @@ void DynamicScene::Draw() {
 
     // Render Background Sprite Texture if specified
     if (!backgroundTexturePath.empty()) {
-        Texture2D bgTex = ResourceManager::Get().GetTexture(backgroundTexturePath);
+        std::string activeBgPath = backgroundTexturePath;
+        if (sceneId == "corridor" && MemoryManager::Get().GetRememberedCount() == 5) {
+            activeBgPath = "assets/sprites/coridor-final.png";
+        }
+        Texture2D bgTex = ResourceManager::Get().GetTexture(activeBgPath);
         if (bgTex.id != 0) {
             DrawTexturePro(
                 bgTex,
@@ -778,6 +817,11 @@ void DynamicScene::Draw() {
         }
 
         DrawInteractionPrompt();
+    }
+
+    // Draw 5th memory corridor blackout transition overlay
+    if (corridorTransitionAlpha > 0.001f) {
+        DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, corridorTransitionAlpha));
     }
 
     // Draw Dialogue Overlay

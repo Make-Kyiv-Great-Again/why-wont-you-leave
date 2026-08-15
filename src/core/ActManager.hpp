@@ -24,6 +24,7 @@ public:
 
     int GetRememberedCountInAct(int act) const;
     bool CanUseExitDoor() const;
+    bool HasAllTrueArtifacts() const;
 
     // Visuals & Environment
     Color GetActLightingTint() const;

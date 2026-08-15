@@ -61,6 +61,7 @@ void MemoryManager::RegisterArtifact(const std::string& id, const std::string& n
 }
 
 void MemoryManager::SaveChoice(const std::string& id, const std::string& choice) {
+    genericChoices[id] = choice;
     for (auto& art : artifacts) {
         if (art.id == id) {
             art.savedChoice = choice;
@@ -70,6 +71,10 @@ void MemoryManager::SaveChoice(const std::string& id, const std::string& choice)
 }
 
 std::string MemoryManager::GetSavedChoice(const std::string& id) const {
+    auto it = genericChoices.find(id);
+    if (it != genericChoices.end()) {
+        return it->second;
+    }
     for (const auto& art : artifacts) {
         if (art.id == id) {
             return art.savedChoice;
@@ -107,6 +112,14 @@ const MemoryArtifact* MemoryManager::GetArtifact(const std::string& id) const {
 
 const std::vector<MemoryArtifact>& MemoryManager::GetAllArtifacts() const {
     return artifacts;
+}
+
+void MemoryManager::Reset() {
+    genericChoices.clear();
+    for (auto& art : artifacts) {
+        art.isRemembered = false;
+        art.savedChoice = "";
+    }
 }
 
 void MemoryManager::DrawMemoryInventoryOverlay(float transition) {

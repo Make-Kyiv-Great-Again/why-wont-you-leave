@@ -1,0 +1,40 @@
+{
+  "start_node_id": 1,
+  "nodes": [
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "The door is wide open... A blinding white light shines from beyond.",
+      "is_blackout": false,
+      "is_memory": false,
+      "options": [
+        {
+          "text": "Stay",
+          "target_id": 2
+        },
+        {
+          "text": "Leave",
+          "target_id": 3
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "I can't let go of this place... I choose to stay.",
+      "next_id": -1,
+      "is_blackout": false,
+      "is_memory": false,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Evan",
+      "text": "It is time to face the truth. I am stepping through the light.",
+      "next_id": -1,
+      "is_blackout": false,
+      "is_memory": false,
+      "options": []
+    }
+  ]
+}

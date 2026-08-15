@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 struct MemoryArtifact {
     std::string id;
@@ -27,6 +28,7 @@ public:
     std::vector<const MemoryArtifact*> GetRememberedArtifacts() const;
     const MemoryArtifact* GetArtifact(const std::string& id) const;
     const std::vector<MemoryArtifact>& GetAllArtifacts() const;
+    void Reset();
 
     void DrawMemoryInventoryOverlay(float transition);
 
@@ -37,4 +39,5 @@ private:
     MemoryManager& operator=(const MemoryManager&) = delete;
 
     std::vector<MemoryArtifact> artifacts;
+    std::unordered_map<std::string, std::string> genericChoices;
 };

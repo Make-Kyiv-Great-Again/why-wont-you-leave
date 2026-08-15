@@ -83,4 +83,9 @@ private:
     std::string pendingExitDialogue = "";
     bool pendingExitIsSceneChange = false;
     std::string pendingExitTargetScene = "";
+
+    // 5th memory corridor blackout fade transition
+    bool isCorridorTransitioning = false;
+    float corridorTransitionTimer = 0.0f;
+    float corridorTransitionAlpha = 0.0f;
 };
