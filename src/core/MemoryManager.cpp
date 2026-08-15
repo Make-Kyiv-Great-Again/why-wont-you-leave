@@ -10,12 +10,14 @@ MemoryManager& MemoryManager::Get() {
 }
 
 MemoryManager::MemoryManager() {
-    // 10 Story Artifacts from Artifact Dialogues
+    // 5 Required / True Story Artifacts
     artifacts.push_back({ "travel_bag", "Grace's Suitcase", "assets/sprites/items/bedroom/travel_bag.png", GOLD, DARKBROWN, false, "", 1 });
     artifacts.push_back({ "job_letter", "Job Offer Letter", "assets/sprites/items/kitchen/job_letter.png", SKYBLUE, DARKBLUE, false, "", 3 });
     artifacts.push_back({ "car_keys", "Car Keys", "assets/sprites/items/hall/19_key.png", LIGHTGRAY, DARKGRAY, false, "", 0 });
     artifacts.push_back({ "diary", "Grace's Diary", "assets/sprites/items/bedroom/20_diary.png", PINK, MAROON, false, "", 1 });
     artifacts.push_back({ "accident_info", "Accident Report", "assets/sprites/items/bedroom/accident_info.png", RED, DARKGRAY, false, "", 1 });
+
+    // 5 Optional / Redundant Artifacts (Holding onto past / Guilt)
     artifacts.push_back({ "photo_of_couple", "Photograph", "assets/sprites/items/kitchen/photo_of_couple.png", BEIGE, BROWN, false, "", 3 });
     artifacts.push_back({ "broken_plate", "Broken Plate", "assets/sprites/items/kitchen/broken_plate.png", LIGHTGRAY, DARKGRAY, false, "", 3 });
     artifacts.push_back({ "guitar", "Guitar", "assets/sprites/items/hall/guitar.png", ORANGE, DARKBROWN, false, "", 0 });
@@ -112,6 +114,15 @@ void MemoryManager::DrawMemoryInventoryOverlay(float transition) {
 
     auto rememberedList = GetRememberedArtifacts();
 
+    // Load Corrupted/Redundant shader
+    Shader corruptedShader = ResourceManager::Get().GetShader("assets/shaders/glsl330/corrupted_memory.fs");
+    if (corruptedShader.id != 0) {
+        int timeLoc = GetShaderLocation(corruptedShader, "time");
+        if (timeLoc != -1) {
+            SetShaderValue(corruptedShader, timeLoc, &time, SHADER_UNIFORM_FLOAT);
+        }
+    }
+
     // Overlay title
     const char* tabTitle = "✦ MEMORY ARCHIVE (TAB) ✦";
     int ttw = ResourceManager::MeasureGameText(tabTitle, 32);
@@ -138,45 +149,76 @@ void MemoryManager::DrawMemoryInventoryOverlay(float transition) {
 
         if (isOccupied) {
             const auto* art = rememberedList[i];
+            bool isTrue = ActManager::IsArtifactTrue(art->id);
 
-            // Soft radial aura behind remembered artifact
-            DrawCircle((int)slotX, (int)(centerY + floatOffset), 130.0f, Fade(art->color, 0.14f * transition));
-            DrawCircle((int)slotX, (int)(centerY + floatOffset), 90.0f, Fade(art->color, 0.24f * transition));
-            DrawCircle((int)slotX, (int)(centerY + floatOffset), 50.0f, Fade(WHITE, 0.35f * transition));
+            if (isTrue) {
+                // 1. Required / True Story Artifact: Radiant Golden Light
+                DrawCircle((int)slotX, (int)(centerY + floatOffset), 130.0f, Fade(art->color, 0.14f * transition));
+                DrawCircle((int)slotX, (int)(centerY + floatOffset), 90.0f, Fade(art->color, 0.24f * transition));
+                DrawCircle((int)slotX, (int)(centerY + floatOffset), 50.0f, Fade(WHITE, 0.35f * transition));
 
-            // Ethereal orbiting particles
-            float pulseAngle = time * 2.0f + i * 3.0f;
-            float px1 = slotX + cosf(pulseAngle) * 80.0f;
-            float py1 = centerY + floatOffset + sinf(pulseAngle) * 80.0f;
-            float px2 = slotX - cosf(pulseAngle) * 80.0f;
-            float py2 = centerY + floatOffset - sinf(pulseAngle) * 80.0f;
-            DrawCircle((int)px1, (int)py1, 3.5f, Fade(GOLD, 0.8f * transition));
-            DrawCircle((int)px2, (int)py2, 3.5f, Fade(GOLD, 0.8f * transition));
+                // Ethereal orbiting gold particles
+                float pulseAngle = time * 2.0f + i * 3.0f;
+                float px1 = slotX + cosf(pulseAngle) * 80.0f;
+                float py1 = centerY + floatOffset + sinf(pulseAngle) * 80.0f;
+                float px2 = slotX - cosf(pulseAngle) * 80.0f;
+                float py2 = centerY + floatOffset - sinf(pulseAngle) * 80.0f;
+                DrawCircle((int)px1, (int)py1, 3.5f, Fade(GOLD, 0.8f * transition));
+                DrawCircle((int)px2, (int)py2, 3.5f, Fade(GOLD, 0.8f * transition));
 
-            // Slot Card Background
-            DrawRectangleRec(cubeRect, Fade(BLACK, 0.85f * transition));
-            DrawRectangleLinesEx(cubeRect, 3.0f, Fade(GOLD, transition));
+                // Slot Card Background
+                DrawRectangleRec(cubeRect, Fade(BLACK, 0.85f * transition));
+                DrawRectangleLinesEx(cubeRect, 3.0f, Fade(GOLD, transition));
 
-            // Draw Artifact Sprite Texture
-            Texture2D tex = ResourceManager::Get().GetTexture(art->texturePath);
-            if (tex.id != 0) {
-                float spriteScale = fminf((cubeSize - 30.0f) / (float)tex.width, (cubeSize - 30.0f) / (float)tex.height);
-                float dw = (float)tex.width * spriteScale;
-                float dh = (float)tex.height * spriteScale;
-                Rectangle destRect = {
-                    slotX - dw / 2.0f,
-                    (centerY + floatOffset) - dh / 2.0f,
-                    dw,
-                    dh
-                };
-                DrawTexturePro(tex, Rectangle{ 0, 0, (float)tex.width, (float)tex.height }, destRect, Vector2{ 0, 0 }, 0.0f, Fade(WHITE, transition));
+                // Draw Texture in True/Clean state
+                Texture2D tex = ResourceManager::Get().GetTexture(art->texturePath);
+                if (tex.id != 0) {
+                    float spriteScale = fminf((cubeSize - 30.0f) / (float)tex.width, (cubeSize - 30.0f) / (float)tex.height);
+                    float dw = (float)tex.width * spriteScale;
+                    float dh = (float)tex.height * spriteScale;
+                    Rectangle destRect = { slotX - dw / 2.0f, (centerY + floatOffset) - dh / 2.0f, dw, dh };
+                    DrawTexturePro(tex, Rectangle{ 0, 0, (float)tex.width, (float)tex.height }, destRect, Vector2{ 0, 0 }, 0.0f, Fade(WHITE, transition));
+                }
+
+                // Name in GOLD
+                int nameW = ResourceManager::MeasureGameText(art->name.c_str(), 20);
+                ResourceManager::DrawGameText(art->name.c_str(), (int)(slotX - nameW / 2.0f), (int)(cubeY + cubeSize + 14), 20, Fade(GOLD, transition));
             } else {
-                DrawRectangle((int)cubeX + 15, (int)cubeY + 15, (int)cubeSize - 30, (int)cubeSize - 30, Fade(art->color, transition));
-            }
+                // 2. Optional / Redundant Artifact: Dark Charred Shadow & Corrupted Shader
+                DrawCircle((int)slotX, (int)(centerY + floatOffset), 120.0f, Fade(BLACK, 0.60f * transition));
+                DrawCircle((int)slotX, (int)(centerY + floatOffset), 80.0f, Fade(Color{ 50, 20, 35, 255 }, 0.45f * transition));
 
-            // Artifact Name below slot
-            int nameW = ResourceManager::MeasureGameText(art->name.c_str(), 20);
-            ResourceManager::DrawGameText(art->name.c_str(), (int)(slotX - nameW / 2.0f), (int)(cubeY + cubeSize + 14), 20, Fade(GOLD, transition));
+                // Dark ash pixel particles
+                float pulseAngle = time * 1.5f + i * 2.5f;
+                float px1 = slotX + cosf(pulseAngle) * 75.0f;
+                float py1 = centerY + floatOffset + sinf(pulseAngle) * 75.0f;
+                DrawRectangle((int)px1 - 2, (int)py1 - 2, 4, 4, Fade(DARKGRAY, 0.65f * transition));
+
+                // Dark Corrupted Slot Card
+                DrawRectangleRec(cubeRect, Fade(Color{ 14, 10, 16, 255 }, 0.94f * transition));
+                DrawRectangleLinesEx(cubeRect, 2.5f, Fade(Color{ 85, 60, 75, 255 }, 0.85f * transition));
+
+                // Draw Texture through Corrupted/Dark Shadow Shader
+                Texture2D tex = ResourceManager::Get().GetTexture(art->texturePath);
+                if (tex.id != 0) {
+                    float spriteScale = fminf((cubeSize - 30.0f) / (float)tex.width, (cubeSize - 30.0f) / (float)tex.height);
+                    float dw = (float)tex.width * spriteScale;
+                    float dh = (float)tex.height * spriteScale;
+                    Rectangle destRect = { slotX - dw / 2.0f, (centerY + floatOffset) - dh / 2.0f, dw, dh };
+
+                    if (corruptedShader.id != 0) {
+                        BeginShaderMode(corruptedShader);
+                    }
+                    DrawTexturePro(tex, Rectangle{ 0, 0, (float)tex.width, (float)tex.height }, destRect, Vector2{ 0, 0 }, 0.0f, Fade(WHITE, transition));
+                    if (corruptedShader.id != 0) {
+                        EndShaderMode();
+                    }
+                }
+
+                // Name in Muted Ash
+                int nameW = ResourceManager::MeasureGameText(art->name.c_str(), 18);
+                ResourceManager::DrawGameText(art->name.c_str(), (int)(slotX - nameW / 2.0f), (int)(cubeY + cubeSize + 14), 18, Fade(Color{ 160, 140, 150, 255 }, transition));
+            }
 
             // Check Mouse Hover & Remove Button
             bool isHovered = CheckCollisionPointRec(mousePos, cubeRect);
