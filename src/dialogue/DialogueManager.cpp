@@ -298,159 +298,138 @@ void DialogueManager::DrawWrappedText(const char* text, int posX, int posY, int 
 void DialogueManager::Draw() {
     if (!isActive || !currentNode) return;
 
-    Vector2 mousePos = GetMousePosition();
+    Vector2 mousePos = SceneManager::Get().GetVirtualMousePosition();
     bool hasOptions = !currentNode->options.empty();
     bool isTypingFinished = (visibleChars >= currentNode->text.length());
 
+    // 1. Memory Mode Dark Backdrop & Header
     if (isMemoryMode) {
-        // ==========================================
-        // MEMORY MODE: Full Black Screen with Centered Dialogue
-        // ==========================================
         DrawRectangle(0, 0, 2000, 800, Fade(BLACK, 0.96f));
 
-        // Memory Header
         const char* memTitle = "✦ MEMORY RECALLED ✦";
         int mtw = ResourceManager::MeasureGameText(memTitle, 36);
-        ResourceManager::DrawGameText(memTitle, (2000 - mtw) / 2, 70, 36, Fade(GOLD, 0.9f));
+        ResourceManager::DrawGameText(memTitle, (2000 - mtw) / 2, 45, 36, Fade(GOLD, 0.85f));
+    }
 
-        // Centered Dialogue Box
-        int boxWidth = 1400;
-        int boxHeight = 220;
-        int boxX = (2000 - boxWidth) / 2;
-        int boxY = 140;
+    // 2. Response Options (Middle of Screen - Small Pale Vertical Buttons)
+    if (isTypingFinished && hasOptions) {
+        int optCount = (int)currentNode->options.size();
+        int cardWidth = 760;
+        int cardHeight = 50;
+        int spacing = 14;
+        int totalHeight = optCount * cardHeight + (optCount - 1) * spacing;
+        
+        int cardX = (2000 - cardWidth) / 2;
+        int startY = (800 - totalHeight) / 2 - 50; // Centered in middle of screen
 
-        DrawRectangle(boxX, boxY, boxWidth, boxHeight, Fade(DARKGRAY, 0.25f));
-        DrawRectangleLinesEx({ (float)boxX, (float)boxY, (float)boxWidth, (float)boxHeight }, 3.0f, GOLD);
+        for (int i = 0; i < optCount; i++) {
+            int cardY = startY + i * (cardHeight + spacing);
+            Rectangle cardRect = { (float)cardX, (float)cardY, (float)cardWidth, (float)cardHeight };
 
-        // Speaker Name
-        DrawRectangle(boxX + 30, boxY - 20, 240, 40, GOLD);
-        ResourceManager::DrawGameText(currentNode->speaker.c_str(), boxX + 45, boxY - 14, 26, BLACK);
+            bool isHovered = CheckCollisionPointRec(mousePos, cardRect);
+            if (isHovered) {
+                selectedOption = i;
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    std::string chosenText = currentNode->options[i].text;
+                    if (!activeArtifactId.empty()) {
+                        MemoryManager::Get().SaveChoice(activeArtifactId, chosenText);
+                    }
 
-        // Dialogue Text (Animated visible letters)
-        DrawWrappedText(displayedText.c_str(), boxX + 40, boxY + 45, 30, boxWidth - 80, RAYWHITE);
-
-        if (isTypingFinished) {
-            if (!hasOptions) {
-                float alpha = 0.6f + 0.4f * sinf(pulseTimer);
-                const char* continueMsg = "Press [Space] or [Enter] to Continue ▶";
-                int msgWidth = ResourceManager::MeasureGameText(continueMsg, 24);
-                ResourceManager::DrawGameText(continueMsg, boxX + boxWidth - msgWidth - 40, boxY + boxHeight - 40, 24, Fade(GOLD, alpha));
-            } else {
-                // Centered Reply Options
-                int optCount = (int)currentNode->options.size();
-                int panelY = 410;
-                int cardHeight = 65;
-                int spacing = 16;
-                int cardWidth = 1300;
-                int cardX = (2000 - cardWidth) / 2;
-
-                for (int i = 0; i < optCount; i++) {
-                    int cardY = panelY + i * (cardHeight + spacing);
-                    Rectangle cardRect = { (float)cardX, (float)cardY, (float)cardWidth, (float)cardHeight };
-
-                    bool isHovered = CheckCollisionPointRec(mousePos, cardRect);
-                    if (isHovered) {
-                        selectedOption = i;
-                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                            if (!activeArtifactId.empty()) {
-                                MemoryManager::Get().SaveChoice(activeArtifactId, currentNode->options[i].text);
-                            }
-
-                            int nextId = currentNode->options[i].targetNodeId;
-                            if (nextId == -1) {
-                                isActive = false;
-                                currentNode = nullptr;
-                                return;
-                            } else {
-                                currentNode = currentTree.GetNode(nextId);
-                                selectedOption = 0;
-                                visibleChars = 0;
-                                displayedText = "";
-                                if (!currentNode) isActive = false;
-                                return;
-                            }
+                    if (chosenText == "Remember") {
+                        isMemoryMode = true;
+                        if (!activeArtifactId.empty()) {
+                            ActManager::Get().MarkArtifactRemembered(activeArtifactId);
                         }
                     }
 
-                    bool isSelected = (selectedOption == i);
-                    Color bgColor = isSelected ? Fade(DARKBLUE, 0.90f) : Fade(BLACK, 0.70f);
-                    Color borderColor = isSelected ? GOLD : Fade(GRAY, 0.6f);
-                    Color textColor = isSelected ? YELLOW : RAYWHITE;
-
-                    DrawRectangleRec(cardRect, bgColor);
-                    DrawRectangleLinesEx(cardRect, isSelected ? 3.0f : 1.5f, borderColor);
-
-                    std::string optText = "[" + std::to_string(i + 1) + "]  " + currentNode->options[i].text;
-                    ResourceManager::DrawGameText(optText.c_str(), (int)cardRect.x + 30, (int)cardRect.y + 18, 26, textColor);
-                }
-            }
-        }
-    } else {
-        // ==========================================
-        // STANDARD MODE: Top Voice Banner
-        // ==========================================
-        int boxX = 160;
-        int boxY = 30;
-        int boxWidth = 1680;
-        int boxHeight = 220;
-
-        DrawRectangle(boxX, boxY, boxWidth, boxHeight, Fade(BLACK, 0.90f));
-        DrawRectangleLinesEx({ (float)boxX, (float)boxY, (float)boxWidth, (float)boxHeight }, 4.0f, GOLD);
-
-        DrawRectangle(boxX + 25, boxY - 20, 260, 42, GOLD);
-        ResourceManager::DrawGameText(currentNode->speaker.c_str(), boxX + 45, boxY - 14, 28, BLACK);
-
-        // Dialogue Text (Animated visible letters)
-        DrawWrappedText(displayedText.c_str(), boxX + 40, boxY + 45, 30, boxWidth - 80, RAYWHITE);
-
-        if (isTypingFinished) {
-            if (!hasOptions) {
-                float alpha = 0.6f + 0.4f * sinf(pulseTimer);
-                const char* continueMsg = "Press [Space] or [Enter] to Continue ▶";
-                int msgWidth = ResourceManager::MeasureGameText(continueMsg, 24);
-                ResourceManager::DrawGameText(continueMsg, boxX + boxWidth - msgWidth - 40, boxY + boxHeight - 40, 24, Fade(GOLD, alpha));
-            } else {
-                int optCount = (int)currentNode->options.size();
-                int panelY = 500;
-                int cardHeight = 55;
-                int spacing = 12;
-
-                for (int i = 0; i < optCount; i++) {
-                    int cardY = panelY + i * (cardHeight + spacing);
-                    Rectangle cardRect = { 250.0f, (float)cardY, 1500.0f, (float)cardHeight };
-
-                    bool isHovered = CheckCollisionPointRec(mousePos, cardRect);
-                    if (isHovered) {
-                        selectedOption = i;
-                        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                            int nextId = currentNode->options[i].targetNodeId;
-                            if (nextId == -1) {
-                                isActive = false;
-                                currentNode = nullptr;
-                                return;
-                            } else {
-                                currentNode = currentTree.GetNode(nextId);
-                                selectedOption = 0;
-                                visibleChars = 0;
-                                displayedText = "";
-                                if (!currentNode) isActive = false;
-                                return;
-                            }
-                        }
+                    int nextId = currentNode->options[i].targetNodeId;
+                    
+                    Sound sfx = ResourceManager::Get().GetSound("assets/sounds/ui_typing_sound.mp3");
+                    if (sfx.frameCount > 0) {
+                        StopSound(sfx);
                     }
 
-                    bool isSelected = (selectedOption == i);
-                    Color bgColor = isSelected ? Fade(DARKBLUE, 0.95f) : Fade(BLACK, 0.85f);
-                    Color borderColor = isSelected ? GOLD : GRAY;
-                    Color textColor = isSelected ? YELLOW : RAYWHITE;
-
-                    DrawRectangleRec(cardRect, bgColor);
-                    DrawRectangleLinesEx(cardRect, isSelected ? 3.0f : 2.0f, borderColor);
-
-                    std::string optText = "[" + std::to_string(i + 1) + "]  " + currentNode->options[i].text;
-                    ResourceManager::DrawGameText(optText.c_str(), (int)cardRect.x + 30, (int)cardRect.y + 14, 26, textColor);
+                    if (nextId == -1) {
+                        isActive = false;
+                        currentNode = nullptr;
+                        OnDialogueFinished();
+                        return;
+                    } else {
+                        currentNode = currentTree.GetNode(nextId);
+                        selectedOption = 0;
+                        visibleChars = 0;
+                        displayedText = "";
+                        if (currentNode) {
+                            if (currentNode->id >= 100) {
+                                isMemoryMode = true;
+                            }
+                            if (sfx.frameCount > 0) {
+                                float soundDuration = (sfx.stream.sampleRate > 0) ? (float)sfx.frameCount / sfx.stream.sampleRate : 0.0f;
+                                float defaultSpeed = 0.035f;
+                                float totalLen = (float)currentNode->text.length();
+                                if (soundDuration > 0.0f && (totalLen * defaultSpeed) > soundDuration) {
+                                    typeSpeed = soundDuration / totalLen;
+                                } else {
+                                    typeSpeed = defaultSpeed;
+                                }
+                                PlaySound(sfx);
+                            } else {
+                                typeSpeed = 0.035f;
+                            }
+                        } else {
+                            isActive = false;
+                            OnDialogueFinished();
+                        }
+                        return;
+                    }
                 }
             }
+
+            bool isSelected = (selectedOption == i);
+
+            // Small pale vertical buttons styling
+            Color bgColor = isSelected ? Fade(WHITE, 0.22f) : Fade(BLACK, 0.70f);
+            Color borderColor = isSelected ? Fade(WHITE, 0.90f) : Fade(LIGHTGRAY, 0.35f);
+            Color textColor = isSelected ? WHITE : Fade(RAYWHITE, 0.85f);
+
+            DrawRectangleRec(cardRect, bgColor);
+            DrawRectangleLinesEx(cardRect, isSelected ? 2.5f : 1.5f, borderColor);
+
+            // Subtle gold accent dot on selection
+            if (isSelected) {
+                DrawCircle((int)cardRect.x + 25, (int)cardRect.y + cardHeight / 2, 5.0f, GOLD);
+            }
+
+            std::string optText = currentNode->options[i].text;
+            ResourceManager::DrawGameText(optText.c_str(), (int)cardRect.x + (isSelected ? 45 : 30), (int)cardRect.y + 12, 26, textColor);
         }
+    }
+
+    // 3. Dialogue Box at the Bottom (Black Semi-Transparent Rectangle)
+    int boxWidth = 1760;
+    int boxHeight = 190;
+    int boxX = (2000 - boxWidth) / 2;
+    int boxY = 800 - boxHeight - 30; // Positioned cleanly at the bottom
+
+    // Black semi-transparent background
+    DrawRectangle(boxX, boxY, boxWidth, boxHeight, Fade(BLACK, 0.88f));
+    DrawRectangleLinesEx({ (float)boxX, (float)boxY, (float)boxWidth, (float)boxHeight }, 2.0f, Fade(LIGHTGRAY, 0.40f));
+
+    // Speaker Name Tag (Top Left of Bottom Box)
+    if (!currentNode->speaker.empty()) {
+        DrawRectangle(boxX + 25, boxY - 20, 240, 40, Fade(BLACK, 0.95f));
+        DrawRectangleLinesEx({ (float)boxX + 25, (float)boxY - 20, 240.0f, 40.0f }, 2.0f, Fade(LIGHTGRAY, 0.50f));
+        ResourceManager::DrawGameText(currentNode->speaker.c_str(), boxX + 40, boxY - 14, 26, GOLD);
+    }
+
+    // Dialogue Text (Animated visible letters)
+    DrawWrappedText(displayedText.c_str(), boxX + 40, boxY + 32, 28, boxWidth - 80, RAYWHITE);
+
+    // Continue Hint
+    if (isTypingFinished && !hasOptions) {
+        float alpha = 0.6f + 0.4f * sinf(pulseTimer);
+        const char* continueMsg = "Press [Space] or [Enter] ▶";
+        int msgWidth = ResourceManager::MeasureGameText(continueMsg, 24);
+        ResourceManager::DrawGameText(continueMsg, boxX + boxWidth - msgWidth - 40, boxY + boxHeight - 38, 24, Fade(GOLD, alpha));
     }
 }
