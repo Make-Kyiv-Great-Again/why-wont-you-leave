@@ -2,6 +2,7 @@
 #include "scenes/Scene.hpp"
 #include "entities/Player.hpp"
 #include "entities/InteractableItem.hpp"
+#include "graphics/Sprite.hpp"
 #include "raylib.h"
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@ struct DoorData {
     float targetSpawnX;
     Color doorColor;
     Color borderColor;
+    Sprite sprite;
 };
 
 class DynamicScene : public Scene {
@@ -34,6 +36,7 @@ private:
     float screenHeight;
     float groundY;
     Color backgroundColor;
+    std::string backgroundTexturePath;
     std::string controlsHint;
     std::string promptText;
 

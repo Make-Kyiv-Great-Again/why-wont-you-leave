@@ -9,6 +9,9 @@ InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect
 InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile)
     : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile) {}
 
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile, const Sprite& sprite)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile), sprite(sprite) {}
+
 bool InteractableItem::CheckCollision(const Rectangle& playerRect) const {
     return CheckCollisionRecs(playerRect, rect);
 }
@@ -18,6 +21,12 @@ void InteractableItem::Interact() {
         DialogueManager::Get().StartDialogueFile(dialogueFile, false, artifactId);
     } else {
         DialogueManager::Get().StartDialogue(dialogue, false, artifactId);
+    }
+}
+
+void InteractableItem::Update(float dt) {
+    if (sprite.IsValid()) {
+        sprite.Update(dt);
     }
 }
 
@@ -33,18 +42,28 @@ void InteractableItem::Draw() const {
         DrawRectangleRec(haloRect, Fade(color, 0.25f + haloPulse * 0.15f));
         DrawRectangleLinesEx(haloRect, 2.0f, Fade(GOLD, 0.6f));
 
-        // Cube body
-        DrawRectangleRec(rect, color);
-        DrawRectangleLinesEx(rect, 3.0f, GOLD);
+        // Draw Sprite or Solid Color
+        if (sprite.IsValid()) {
+            sprite.Draw(rect);
+            DrawRectangleLinesEx(rect, 3.0f, GOLD);
+        } else {
+            DrawRectangleRec(rect, color);
+            DrawRectangleLinesEx(rect, 3.0f, GOLD);
+        }
 
         // Label above
         std::string labelText = name + " ✦";
         int labelWidth = MeasureText(labelText.c_str(), 22);
         DrawText(labelText.c_str(), (int)(rect.x + (rect.width - labelWidth) / 2.0f), (int)(rect.y - 34), 22, GOLD);
     } else {
-        // Normal cube
-        DrawRectangleRec(rect, color);
-        DrawRectangleLinesEx(rect, 3.0f, borderColor);
+        // Normal state
+        if (sprite.IsValid()) {
+            sprite.Draw(rect);
+            DrawRectangleLinesEx(rect, 3.0f, borderColor);
+        } else {
+            DrawRectangleRec(rect, color);
+            DrawRectangleLinesEx(rect, 3.0f, borderColor);
+        }
 
         // Label above
         int labelWidth = MeasureText(name.c_str(), 22);

@@ -3,6 +3,7 @@
   "title": "CORRIDOR",
   "ground_y": 660.0,
   "background_color": "#F5F5F5",
+  "background_texture": "assets/sprites/bg1.png",
   "controls_hint": "Controls: [A/D] or [Left/Right] to Move | [E] to Enter Doors | [R] Reload JSON",
   "doors": [
     {
@@ -11,7 +12,8 @@
       "target_scene": "room1",
       "target_spawn_x": 424.0,
       "door_color": "#8B4513",
-      "border_color": "#5C4033"
+      "border_color": "#5C4033",
+      "texture": "assets/sprites/door.png"
     },
     {
       "label": "Room 2",
@@ -19,7 +21,8 @@
       "target_scene": "room2",
       "target_spawn_x": 960.0,
       "door_color": "#8B4513",
-      "border_color": "#5C4033"
+      "border_color": "#5C4033",
+      "texture": "assets/sprites/door.png"
     },
     {
       "label": "Room 3",
@@ -27,7 +30,8 @@
       "target_scene": "room3",
       "target_spawn_x": 1494.0,
       "door_color": "#8B4513",
-      "border_color": "#5C4033"
+      "border_color": "#5C4033",
+      "texture": "assets/sprites/door.png"
     },
     {
       "label": "Room 4 (Secret)",
@@ -35,7 +39,8 @@
       "target_scene": "room4",
       "target_spawn_x": 300.0,
       "door_color": "#2B1B17",
-      "border_color": "#8B0000"
+      "border_color": "#8B0000",
+      "texture": "assets/sprites/door.png"
     }
   ],
   "items": []

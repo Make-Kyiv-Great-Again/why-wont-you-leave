@@ -11,7 +11,8 @@
       "target_scene": "corridor",
       "target_spawn_x": 960.0,
       "door_color": "#8B4513",
-      "border_color": "#5C4033"
+      "border_color": "#5C4033",
+      "texture": "assets/sprites/door.png"
     }
   ],
   "items": [

@@ -35,6 +35,14 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
     backgroundColor = ResourceManager::HexToColor(j.value("background_color", "#F5F5F5"));
     controlsHint = j.value("controls_hint", "Controls: [A/D] to Move | [E] Interact");
 
+    // Load background texture path
+    backgroundTexturePath = "";
+    if (j.contains("background_texture")) {
+        backgroundTexturePath = j["background_texture"].get<std::string>();
+    } else if (j.contains("background") && j["background"].is_object() && j["background"].contains("texture")) {
+        backgroundTexturePath = j["background"]["texture"].get<std::string>();
+    }
+
     // Load Doors
     if (j.contains("doors") && j["doors"].is_array()) {
         for (const auto& doorJson : j["doors"]) {
@@ -57,6 +65,14 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
 
             door.doorColor = ResourceManager::HexToColor(doorJson.value("door_color", "#8B4513"));
             door.borderColor = ResourceManager::HexToColor(doorJson.value("border_color", "#5C4033"));
+
+            // Door Sprite parsing
+            if (doorJson.contains("texture")) {
+                door.sprite.texturePath = doorJson["texture"].get<std::string>();
+            } else if (doorJson.contains("sprite") && doorJson["sprite"].is_object() && doorJson["sprite"].contains("texture")) {
+                door.sprite.texturePath = doorJson["sprite"]["texture"].get<std::string>();
+            }
+
             doors.push_back(door);
         }
     }
@@ -84,7 +100,21 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
             Color borderColor = ResourceManager::HexToColor(itemJson.value("border_color", "#00008B"));
             std::string dialogueFile = itemJson.value("dialogue_file", "");
 
-            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile);
+            // Item Sprite parsing
+            Sprite itemSprite;
+            if (itemJson.contains("texture")) {
+                itemSprite.texturePath = itemJson["texture"].get<std::string>();
+            } else if (itemJson.contains("visual") && itemJson["visual"].is_object() && itemJson["visual"].contains("texture") && !itemJson["visual"]["texture"].is_null()) {
+                itemSprite.texturePath = itemJson["visual"]["texture"].get<std::string>();
+            }
+
+            if (itemJson.contains("is_animated")) {
+                itemSprite.isAnimated = itemJson.value("is_animated", false);
+                itemSprite.frameCount = itemJson.value("frame_count", 1);
+                itemSprite.frameTime = itemJson.value("frame_time", 0.1f);
+            }
+
+            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile, itemSprite);
 
             // Register with MemoryManager
             int roomId = 0;
@@ -108,6 +138,14 @@ void DynamicScene::Update(float dt) {
     // Hot-reload scene JSON when pressing R
     if (IsKeyPressed(KEY_R)) {
         LoadFromConfigFile(jsonPath);
+    }
+
+    // Update sprite animations
+    for (auto& item : items) {
+        item.Update(dt);
+    }
+    for (auto& door : doors) {
+        door.sprite.Update(dt);
     }
 
     // Update effects
@@ -216,6 +254,21 @@ void DynamicScene::Draw() {
         BeginShaderMode(sceneShader);
     }
 
+    // Render Background Sprite Texture if specified
+    if (!backgroundTexturePath.empty()) {
+        Texture2D bgTex = ResourceManager::Get().GetTexture(backgroundTexturePath);
+        if (bgTex.id != 0) {
+            DrawTexturePro(
+                bgTex,
+                Rectangle{ 0, 0, (float)bgTex.width, (float)bgTex.height },
+                Rectangle{ 0, 0, screenWidth, screenHeight },
+                Vector2{ 0, 0 },
+                0.0f,
+                WHITE
+            );
+        }
+    }
+
     // Floor Line
     DrawLine(0, (int)groundY, (int)screenWidth, (int)groundY, DARKGRAY);
 
@@ -224,9 +277,14 @@ void DynamicScene::Draw() {
 
     // Draw Doors
     for (const auto& door : doors) {
-        DrawRectangleRec(door.rect, door.doorColor);
-        DrawRectangleLinesEx(door.rect, 4, door.borderColor);
-        DrawCircle((int)(door.rect.x + door.rect.width - 20), (int)(door.rect.y + 120), 8, GOLD);
+        if (door.sprite.IsValid()) {
+            door.sprite.Draw(door.rect);
+            DrawRectangleLinesEx(door.rect, 4, door.borderColor);
+        } else {
+            DrawRectangleRec(door.rect, door.doorColor);
+            DrawRectangleLinesEx(door.rect, 4, door.borderColor);
+            DrawCircle((int)(door.rect.x + door.rect.width - 20), (int)(door.rect.y + 120), 8, GOLD);
+        }
 
         int labelWidth = MeasureText(door.label.c_str(), 32);
         DrawText(door.label.c_str(),
