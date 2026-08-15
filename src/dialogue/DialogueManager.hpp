@@ -38,4 +38,5 @@ private:
     float typeTimer = 0.0f;
     float typeSpeed = 0.02f;
     std::string displayedText = "";
+    float memoryItemAnimTimer = 0.0f;
 };

@@ -94,6 +94,15 @@ std::vector<const MemoryArtifact*> MemoryManager::GetRememberedArtifacts() const
     return list;
 }
 
+const MemoryArtifact* MemoryManager::GetArtifact(const std::string& id) const {
+    for (const auto& art : artifacts) {
+        if (art.id == id) {
+            return &art;
+        }
+    }
+    return nullptr;
+}
+
 const std::vector<MemoryArtifact>& MemoryManager::GetAllArtifacts() const {
     return artifacts;
 }

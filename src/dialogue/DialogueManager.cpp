@@ -34,6 +34,7 @@ void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, con
     isMemoryMode = forceMemory;
     activeArtifactId = artifactId;
     pulseTimer = 0.0f;
+    memoryItemAnimTimer = 0.0f;
 
     // Reset typing state
     visibleChars = 0;
@@ -85,31 +86,6 @@ bool DialogueManager::IsMemoryMode() const {
 }
 
 void DialogueManager::OnDialogueFinished() {
-
-    if (activeArtifactId == "windshield_fragment" && ActManager::Get().IsArtifactRemembered("windshield_fragment")) {
-        ActManager::Get().SetAct(5);
-        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(5, "the_door"));
-        return;
-    }
-
-    if (activeScriptPath == "assets/data/dialogues/act1_exit.json") {
-        ActManager::Get().SetAct(2);
-        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(2, "corridor"));
-        return;
-    }
-
-    if (activeScriptPath == "assets/data/dialogues/act2_voice.json") {
-        ActManager::Get().SetAct(3);
-        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(3, "corridor"));
-        return;
-    }
-
-    if (activeScriptPath == "assets/data/dialogues/act3_voice.json") {
-        ActManager::Get().SetAct(4);
-        SceneManager::Get().ChangeScene(std::make_unique<ActTitleScene>(4, "corridor"));
-        return;
-    }
-
     if (activeScriptPath == "assets/data/dialogues/act5_leave_choice.json") {
         SceneManager::Get().ChangeScene(std::make_unique<MainMenuScene>());
         return;
@@ -120,6 +96,12 @@ void DialogueManager::Update(float dt) {
     bool shouldBlackout = isActive && currentNode && (currentNode->isBlackout || currentNode->isMemory || isMemoryMode);
     float targetAlpha = shouldBlackout ? 0.98f : 0.0f;
     blackoutAlpha += (targetAlpha - blackoutAlpha) * fminf(dt * 7.0f, 1.0f);
+
+    if (shouldBlackout || blackoutAlpha > 0.05f) {
+        memoryItemAnimTimer += dt;
+    } else {
+        memoryItemAnimTimer = 0.0f;
+    }
 
     if (!isActive || !currentNode) return;
 
@@ -199,6 +181,7 @@ void DialogueManager::Update(float dt) {
 
             if (chosenText == "Remember") {
                 isMemoryMode = true;
+                memoryItemAnimTimer = 0.0f;
             }
 
             int nextId = currentNode->options[selectedOption].targetNodeId;
@@ -212,6 +195,7 @@ void DialogueManager::Update(float dt) {
                 isActive = false;
                 currentNode = nullptr;
                 OnDialogueFinished();
+                return;
             } else {
                 currentNode = currentTree.GetNode(nextId);
                 selectedOption = 0;
@@ -237,7 +221,6 @@ void DialogueManager::Update(float dt) {
                     }
                 } else {
                     isActive = false;
-                    OnDialogueFinished();
                 }
             }
         }
@@ -316,6 +299,7 @@ void DialogueManager::Draw() {
     Vector2 mousePos = SceneManager::Get().GetVirtualMousePosition();
     bool hasOptions = !currentNode->options.empty();
     bool isTypingFinished = (visibleChars >= currentNode->text.length());
+    bool isMemoryActive = (blackoutAlpha > 0.02f) && (isMemoryMode || (currentNode && (currentNode->isMemory || currentNode->isBlackout)));
 
     // 1. Memory Mode / Blackout Dark Backdrop & Header
     if (blackoutAlpha > 0.02f) {
@@ -328,16 +312,64 @@ void DialogueManager::Draw() {
         }
     }
 
-    // 2. Response Options (Middle of Screen - Small Pale Vertical Buttons)
+    // Floating Animated Memory Item in Center/Upper Screen (no background circles)
+    const MemoryArtifact* memArt = nullptr;
+    if (!activeArtifactId.empty()) {
+        memArt = MemoryManager::Get().GetArtifact(activeArtifactId);
+    }
+    if (memArt == nullptr && !activeScriptPath.empty()) {
+        for (const auto& a : MemoryManager::Get().GetAllArtifacts()) {
+            if (activeScriptPath.find(a.id) != std::string::npos) {
+                memArt = &a;
+                break;
+            }
+        }
+    }
+
+    bool hasItemToDraw = (isMemoryActive && memArt != nullptr && !memArt->texturePath.empty());
+
+    if (hasItemToDraw) {
+        float animDuration = 0.65f;
+        float progress = fminf(memoryItemAnimTimer / animDuration, 1.0f);
+        // Smooth cubic ease-out
+        float ease = 1.0f - powf(1.0f - progress, 3.0f);
+        float spriteAlpha = ease * (blackoutAlpha / 0.98f);
+
+        float centerX = 1000.0f;
+        float centerY = (isTypingFinished && hasOptions) ? 220.0f : 275.0f;
+        float floatOffset = sinf((float)GetTime() * 2.2f) * 6.0f;
+
+        float baseSize = (isTypingFinished && hasOptions) ? 150.0f : 180.0f;
+        float drawSize = baseSize * (0.80f + 0.20f * ease);
+
+        // Draw Item Texture with fading transparency animation
+        Texture2D itemTex = ResourceManager::Get().GetTexture(memArt->texturePath);
+        if (itemTex.id != 0) {
+            Rectangle srcRect = { 0.0f, 0.0f, (float)itemTex.width, (float)itemTex.height };
+            Rectangle destRect = {
+                centerX - drawSize / 2.0f,
+                centerY - drawSize / 2.0f + floatOffset,
+                drawSize,
+                drawSize
+            };
+            DrawTexturePro(itemTex, srcRect, destRect, Vector2{ 0, 0 }, 0.0f, Fade(WHITE, spriteAlpha));
+        }
+
+        // Draw Item Name underneath
+        int nameWidth = ResourceManager::MeasureGameText(memArt->name.c_str(), 24);
+        ResourceManager::DrawGameText(memArt->name.c_str(), (int)(centerX - nameWidth / 2.0f), (int)(centerY + drawSize / 2.0f + 8.0f + floatOffset), 24, Fade(memArt->color, spriteAlpha * 0.90f));
+    }
+
+    // 2. Response Options (Pale Vertical Buttons)
     if (isTypingFinished && hasOptions) {
         int optCount = (int)currentNode->options.size();
-        int cardWidth = 760;
-        int cardHeight = 50;
-        int spacing = 14;
+        int cardWidth = 720;
+        int cardHeight = hasItemToDraw ? 44 : 50;
+        int spacing = hasItemToDraw ? 10 : 14;
         int totalHeight = optCount * cardHeight + (optCount - 1) * spacing;
         
         int cardX = (2000 - cardWidth) / 2;
-        int startY = (800 - totalHeight) / 2 - 50; // Centered in middle of screen
+        int startY = hasItemToDraw ? 360 : ((800 - totalHeight) / 2 - 50);
 
         for (int i = 0; i < optCount; i++) {
             int cardY = startY + i * (cardHeight + spacing);
@@ -367,6 +399,7 @@ void DialogueManager::Draw() {
 
                     if (chosenText == "Remember") {
                         isMemoryMode = true;
+                        memoryItemAnimTimer = 0.0f;
                     }
 
                     int nextId = currentNode->options[i].targetNodeId;
@@ -424,11 +457,11 @@ void DialogueManager::Draw() {
 
             // Subtle gold accent dot on selection
             if (isSelected) {
-                DrawCircle((int)cardRect.x + 25, (int)cardRect.y + cardHeight / 2, 5.0f, GOLD);
+                DrawCircle((int)cardRect.x + 22, (int)cardRect.y + cardHeight / 2, 4.5f, GOLD);
             }
 
             std::string optText = currentNode->options[i].text;
-            ResourceManager::DrawGameText(optText.c_str(), (int)cardRect.x + (isSelected ? 45 : 30), (int)cardRect.y + 12, 26, textColor);
+            ResourceManager::DrawGameText(optText.c_str(), (int)cardRect.x + (isSelected ? 40 : 26), (int)cardRect.y + (cardHeight - 24) / 2, 24, textColor);
         }
     }
 

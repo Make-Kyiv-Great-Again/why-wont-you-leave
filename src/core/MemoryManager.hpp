@@ -25,6 +25,7 @@ public:
     std::string GetSavedChoice(const std::string& id) const;
     int GetRememberedCount() const;
     std::vector<const MemoryArtifact*> GetRememberedArtifacts() const;
+    const MemoryArtifact* GetArtifact(const std::string& id) const;
     const std::vector<MemoryArtifact>& GetAllArtifacts() const;
 
     void DrawMemoryInventoryOverlay(float transition);
