@@ -22,8 +22,8 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
     LoadFromConfigFile(jsonPath);
 
     // Pause menu button layout (Options & Exit side-by-side in one row)
-    float btnW = 220.0f;
-    float btnH = 85.0f;
+    float btnW = 200.0f;
+    float btnH = 70.0f;
     float gap = 40.0f;
     float rowW = btnW * 2.0f + gap;
     float startX = (screenWidth - rowW) / 2.0f;
@@ -565,26 +565,26 @@ void DynamicScene::DrawInteractionPrompt() {
     Texture2D btnETex = ResourceManager::Get().GetTexture("assets/sprites/button_E.png");
     Texture2D btnQTex = ResourceManager::Get().GetTexture("assets/sprites/button_Q.png");
 
-    float btnSize = 48.0f;
-    int fontSize = 28;
-    float gap = 16.0f;
-    float midGap = 24.0f;
-    float centerY = 730.0f;
+    float btnSize = 42.0f;
+    int fontSize = 30;
+    float gap = 14.0f;
+    float midGap = 20.0f;
+    float centerY = 735.0f;
 
     if (activeHoverItem != nullptr) {
         if (activeHoverItem->isMemoryArtifact) {
             std::string qDesc = "Take Memory";
             std::string eDesc = "Inspect " + activeHoverItem->name;
 
-            int qW = ResourceManager::MeasureGameText(qDesc.c_str(), fontSize);
-            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), fontSize);
+            int qW = ResourceManager::MeasureGameText(qDesc.c_str(), (float)fontSize);
+            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), (float)fontSize);
 
             float totalW = qW + gap + btnSize + midGap + btnSize + gap + eW;
             float startX = (screenWidth - totalW) / 2.0f;
 
-            // 1. Button Q Description
-            Color qColor = (holdQTimer > 0.05f) ? GOLD : RAYWHITE;
-            ResourceManager::DrawGameText(qDesc.c_str(), (int)startX, (int)(centerY - fontSize / 2.0f), fontSize, qColor);
+            // 1. Button Q Description (White with Black Outline)
+            Color qColor = (holdQTimer > 0.05f) ? GOLD : WHITE;
+            ResourceManager::DrawGameTextWithOutline(qDesc.c_str(), startX, centerY - fontSize / 2.0f, (float)fontSize, qColor, BLACK, 2.0f);
 
             // 2. Button Q Sprite
             float btnQX = startX + qW + gap;
@@ -605,16 +605,16 @@ void DynamicScene::DrawInteractionPrompt() {
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
 
-            // 4. Button E Description
+            // 4. Button E Description (White with Black Outline)
             float eTextX = btnEX + btnSize + gap;
-            ResourceManager::DrawGameText(eDesc.c_str(), (int)eTextX, (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(eDesc.c_str(), eTextX, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         } else {
             // Non-memory artifact item (e.g. mirror, oven, toilet, open door)
             std::string eDesc = "Examine " + activeHoverItem->name;
             if (activeHoverItem->artifactId == "corridor_locked_door" && MemoryManager::Get().GetRememberedCount() == 5) {
                 eDesc = "Approach the Open Door";
             }
-            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), fontSize);
+            int eW = ResourceManager::MeasureGameText(eDesc.c_str(), (float)fontSize);
             float totalW = btnSize + gap + eW;
             float startX = (screenWidth - totalW) / 2.0f;
 
@@ -623,7 +623,7 @@ void DynamicScene::DrawInteractionPrompt() {
                                Rectangle{ startX, centerY - btnSize / 2.0f, btnSize, btnSize },
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
-            ResourceManager::DrawGameText(eDesc.c_str(), (int)(startX + btnSize + gap), (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(eDesc.c_str(), startX + btnSize + gap, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         }
     } else if (!promptText.empty()) {
         const std::string prefix = "Press [E] to ";
@@ -631,7 +631,7 @@ void DynamicScene::DrawInteractionPrompt() {
             std::string actionDesc = promptText.substr(prefix.length());
             if (!actionDesc.empty()) actionDesc[0] = (char)toupper(actionDesc[0]);
             
-            int textW = ResourceManager::MeasureGameText(actionDesc.c_str(), fontSize);
+            int textW = ResourceManager::MeasureGameText(actionDesc.c_str(), (float)fontSize);
             float totalW = btnSize + gap + textW;
             float startX = (screenWidth - totalW) / 2.0f;
 
@@ -640,26 +640,52 @@ void DynamicScene::DrawInteractionPrompt() {
                                Rectangle{ startX, centerY - btnSize / 2.0f, btnSize, btnSize },
                                Vector2{ 0, 0 }, 0.0f, WHITE);
             }
-            ResourceManager::DrawGameText(actionDesc.c_str(), (int)(startX + btnSize + gap), (int)(centerY - fontSize / 2.0f), fontSize, RAYWHITE);
+            ResourceManager::DrawGameTextWithOutline(actionDesc.c_str(), startX + btnSize + gap, centerY - fontSize / 2.0f, (float)fontSize, WHITE, BLACK, 2.0f);
         } else {
-            int textW = ResourceManager::MeasureGameText(promptText.c_str(), fontSize);
+            int textW = ResourceManager::MeasureGameText(promptText.c_str(), (float)fontSize);
             float startX = (screenWidth - textW) / 2.0f;
-            ResourceManager::DrawGameText(promptText.c_str(), (int)startX, (int)(centerY - fontSize / 2.0f), fontSize, GOLD);
+            ResourceManager::DrawGameTextWithOutline(promptText.c_str(), startX, centerY - fontSize / 2.0f, (float)fontSize, GOLD, BLACK, 2.0f);
         }
     }
 }
 
 void DynamicScene::DrawPauseOverlay() {
     // 1. Darken the game screen slightly
-    DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.65f));
+    DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.70f));
 
-    // 2. Pause Header
-    const char* pauseTitle = "GAME PAUSED";
-    int titleW = ResourceManager::MeasureGameText(pauseTitle, 50);
-    ResourceManager::DrawGameText(pauseTitle, (int)(screenWidth - titleW) / 2, 240, 50, GOLD);
+    float time = (float)GetTime();
+
+    // 2. Pause Header (Custom sprite game_paused.png / game_paused.svg with fallback)
+    Texture2D pauseTitleTex = ResourceManager::Get().GetTexture("assets/sprites/game_paused.png");
+    if (pauseTitleTex.id == 0) {
+        pauseTitleTex = ResourceManager::Get().GetTexture("assets/sprites/game_paused.svg");
+    }
+
+    if (pauseTitleTex.id != 0) {
+        float titleW = 550.0f;
+        float titleH = titleW * ((float)pauseTitleTex.height / (float)pauseTitleTex.width);
+        float titleOffset = sinf(time * 1.5f) * 4.0f;
+        Rectangle titleDest = {
+            (screenWidth - titleW) / 2.0f,
+            215.0f + titleOffset,
+            titleW,
+            titleH
+        };
+        DrawTexturePro(
+            pauseTitleTex,
+            Rectangle{ 0, 0, (float)pauseTitleTex.width, (float)pauseTitleTex.height },
+            titleDest,
+            Vector2{ 0, 0 },
+            0.0f,
+            WHITE
+        );
+    } else {
+        const char* pauseTitle = "GAME PAUSED";
+        int titleW = ResourceManager::MeasureGameText(pauseTitle, 48.0f);
+        ResourceManager::DrawGameTextWithOutline(pauseTitle, (screenWidth - titleW) / 2.0f, 225.0f, 48.0f, Color{ 255, 245, 241, 255 }, Color{ 103, 90, 79, 255 }, 2.5f);
+    }
 
     // 3. Helper Lambda to draw SVG pause buttons (NO text overlays)
-    float time = (float)GetTime();
     auto DrawPauseBtn = [&](int index, Rectangle rect, const char* texturePath) {
         bool isSelected = (pauseSelectedBtn == index);
         Texture2D btnTex = ResourceManager::Get().GetTexture(texturePath);
@@ -695,18 +721,82 @@ void DynamicScene::DrawPauseOverlay() {
 
     // Guidance footer
     const char* pauseHint = "Press [ESC] to Resume Gameplay | [A/D / Mouse] to Select";
-    int hintW = ResourceManager::MeasureGameText(pauseHint, 24);
-    ResourceManager::DrawGameText(pauseHint, (int)(screenWidth - hintW) / 2, 700, 24, Fade(WHITE, 0.85f));
+    int hintW = ResourceManager::MeasureGameText(pauseHint, 24.0f);
+    ResourceManager::DrawGameTextWithOutline(pauseHint, (screenWidth - hintW) / 2.0f, 700.0f, 24.0f, Fade(RAYWHITE, 0.85f), BLACK, 1.5f);
 
-    // Options Popup Overlay inside Pause
+    // 4. Options Modal Overlay inside Pause (Horizontally Centered & Styled)
     if (showPauseOptions) {
-        DrawRectangle(400, 200, 1200, 400, Fade(BLACK, 0.92f));
-        DrawRectangleLinesEx(Rectangle{ 400, 200, 1200, 400 }, 4.0f, GOLD);
-        
-        ResourceManager::DrawGameText("OPTIONS / SETTINGS", 760, 250, 40, GOLD);
-        ResourceManager::DrawGameText("- Fullscreen Mode: Press F11 or Alt+Enter at any time", 500, 340, 28, WHITE);
-        ResourceManager::DrawGameText("- Hot Reload Scenes: Press R during gameplay", 500, 390, 28, WHITE);
-        ResourceManager::DrawGameText("Press [Enter] or click Options again to close", 650, 520, 24, GRAY);
+        float cardWidth = 1020.0f;
+        float cardHeight = 500.0f;
+        float cardX = (screenWidth - cardWidth) / 2.0f;
+        float cardY = (screenHeight - cardHeight) / 2.0f;
+
+        // Dim background backdrop
+        DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.55f));
+
+        // Outer & Inner Modal Frame
+        DrawRectangle((int)cardX, (int)cardY, (int)cardWidth, (int)cardHeight, Fade(Color{ 10, 10, 14, 255 }, 0.96f));
+        DrawRectangleLinesEx(Rectangle{ cardX, cardY, cardWidth, cardHeight }, 3.0f, Fade(GOLD, 0.85f));
+        DrawRectangleLinesEx(Rectangle{ cardX + 6.0f, cardY + 6.0f, cardWidth - 12.0f, cardHeight - 12.0f }, 1.5f, Fade(LIGHTGRAY, 0.30f));
+
+        // Header Title
+        const char* optHeader = "✦ SETTINGS & CONTROLS ✦";
+        int headerW = ResourceManager::MeasureGameText(optHeader, 36.0f);
+        ResourceManager::DrawGameTextWithOutline(optHeader, (screenWidth - headerW) / 2.0f, cardY + 28.0f, 36.0f, GOLD, BLACK, 2.0f);
+
+        DrawLineEx(Vector2{ cardX + 60.0f, cardY + 76.0f }, Vector2{ cardX + cardWidth - 60.0f, cardY + 76.0f }, 2.0f, Fade(GOLD, 0.40f));
+
+        // Controls Grid (2 Columns x 3 Rows)
+        struct ControlItem {
+            std::string key;
+            std::string desc;
+        };
+
+        std::vector<ControlItem> col1 = {
+            { "A / D  or  <- / ->", "Move Character" },
+            { "E", "Inspect Item / Door" },
+            { "Q  (Hold)", "Collect Story Memory" }
+        };
+
+        std::vector<ControlItem> col2 = {
+            { "TAB", "Memory Archive" },
+            { "F11  /  Alt+Enter", "Toggle Fullscreen" },
+            { "ESC", "Pause / Resume" }
+        };
+
+        float startContentY = cardY + 100.0f;
+        float rowHeight = 92.0f;
+        float colWidth = 430.0f;
+
+        auto DrawControlColumn = [&](const std::vector<ControlItem>& list, float colX) {
+            for (size_t i = 0; i < list.size(); i++) {
+                float rowY = startContentY + (float)i * rowHeight;
+                Rectangle rowBox = { colX, rowY, colWidth, 74.0f };
+
+                DrawRectangleRec(rowBox, Fade(WHITE, 0.04f));
+                DrawRectangleLinesEx(rowBox, 1.5f, Fade(LIGHTGRAY, 0.20f));
+
+                // Key Badge
+                int keyW = ResourceManager::MeasureGameText(list[i].key.c_str(), 24.0f);
+                Rectangle keyRect = { colX + 16.0f, rowY + 18.0f, (float)keyW + 22.0f, 38.0f };
+                DrawRectangleRec(keyRect, Fade(BLACK, 0.75f));
+                DrawRectangleLinesEx(keyRect, 2.0f, Fade(GOLD, 0.70f));
+                ResourceManager::DrawGameTextWithOutline(list[i].key.c_str(), colX + 27.0f, rowY + 24.0f, 24.0f, GOLD, BLACK, 1.5f);
+
+                // Description
+                float descX = colX + 16.0f + keyRect.width + 16.0f;
+                ResourceManager::DrawGameTextWithOutline(list[i].desc.c_str(), descX, rowY + 26.0f, 22.0f, RAYWHITE, BLACK, 1.5f);
+            }
+        };
+
+        DrawControlColumn(col1, cardX + 50.0f);
+        DrawControlColumn(col2, cardX + 540.0f);
+
+        // Footer Hint
+        float alpha = 0.6f + 0.4f * sinf(time * 4.0f);
+        const char* closeHint = "Press [Enter], [ESC], or Click to Close";
+        int closeW = ResourceManager::MeasureGameText(closeHint, 24.0f);
+        ResourceManager::DrawGameTextWithOutline(closeHint, (screenWidth - closeW) / 2.0f, cardY + cardHeight - 48.0f, 24.0f, Fade(GOLD, alpha), BLACK, 1.5f);
     }
 }
 

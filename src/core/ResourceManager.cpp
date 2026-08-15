@@ -70,6 +70,8 @@ Texture2D ResourceManager::GetTexture(const std::string& filePath) {
     if (tex.id != 0) {
         SetTextureFilter(tex, TEXTURE_FILTER_POINT);
         textureCache[filePath] = tex;
+    } else {
+        textureCache[filePath] = Texture2D{ 0 };
     }
     return tex;
 }
@@ -170,6 +172,20 @@ Music ResourceManager::GetMusic(const std::string& filePath) {
 void ResourceManager::DrawGameText(const char* text, float posX, float posY, float fontSize, Color color) {
     Font font = ResourceManager::Get().GetFont("assets/fonts/Jersey10-Regular.ttf");
     DrawTextEx(font, text, Vector2{ posX, posY }, fontSize, 2.0f, color);
+}
+
+void ResourceManager::DrawGameTextWithOutline(const char* text, float posX, float posY, float fontSize, Color textColor, Color outlineColor, float outlineSize) {
+    Font font = ResourceManager::Get().GetFont("assets/fonts/Jersey10-Regular.ttf");
+    // Draw 8-directional outline
+    for (float dx = -outlineSize; dx <= outlineSize; dx += outlineSize) {
+        for (float dy = -outlineSize; dy <= outlineSize; dy += outlineSize) {
+            if (dx != 0.0f || dy != 0.0f) {
+                DrawTextEx(font, text, Vector2{ posX + dx, posY + dy }, fontSize, 2.0f, outlineColor);
+            }
+        }
+    }
+    // Draw foreground text
+    DrawTextEx(font, text, Vector2{ posX, posY }, fontSize, 2.0f, textColor);
 }
 
 int ResourceManager::MeasureGameText(const char* text, float fontSize) {
