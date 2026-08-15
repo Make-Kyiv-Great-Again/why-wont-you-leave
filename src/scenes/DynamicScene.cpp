@@ -1,0 +1,277 @@
+#include "scenes/DynamicScene.hpp"
+#include "core/SceneManager.hpp"
+#include "dialogue/DialogueManager.hpp"
+#include "core/MemoryManager.hpp"
+#include "core/EffectManager.hpp"
+#include "core/ResourceManager.hpp"
+#include <nlohmann/json.hpp>
+#include <cmath>
+#include <iostream>
+
+DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX)
+    : sceneId(sceneId),
+      jsonPath("assets/data/scenes/" + sceneId + ".json"),
+      screenWidth(2000.0f),
+      screenHeight(800.0f),
+      groundY(660.0f),
+      backgroundColor(RAYWHITE),
+      player(spawnPlayerX, 660.0f) {
+    LoadFromConfigFile(jsonPath);
+    player.rect.y = groundY - player.rect.height;
+}
+
+void DynamicScene::LoadFromConfigFile(const std::string& path) {
+    nlohmann::json j = ResourceManager::Get().LoadJson(path);
+    if (j.is_null()) {
+        TraceLog(LOG_WARNING, "DYNAMIC_SCENE: Could not load scene from %s", path.c_str());
+        return;
+    }
+
+    doors.clear();
+    items.clear();
+
+    title = j.value("title", "SCENE");
+    groundY = j.value("ground_y", 660.0f);
+    backgroundColor = ResourceManager::HexToColor(j.value("background_color", "#F5F5F5"));
+    controlsHint = j.value("controls_hint", "Controls: [A/D] to Move | [E] Interact");
+
+    // Load Doors
+    if (j.contains("doors") && j["doors"].is_array()) {
+        for (const auto& doorJson : j["doors"]) {
+            DoorData door;
+            door.label = doorJson.value("label", "Door");
+            door.targetScene = doorJson.value("target_scene", "corridor");
+            door.targetSpawnX = doorJson.value("target_spawn_x", 200.0f);
+            
+            if (doorJson.contains("rect")) {
+                auto r = doorJson["rect"];
+                door.rect = Rectangle{
+                    r.value("x", 0.0f),
+                    r.value("y", 0.0f),
+                    r.value("width", 130.0f),
+                    r.value("height", 240.0f)
+                };
+            } else {
+                door.rect = Rectangle{ 0.0f, groundY - 240.0f, 130.0f, 240.0f };
+            }
+
+            door.doorColor = ResourceManager::HexToColor(doorJson.value("door_color", "#8B4513"));
+            door.borderColor = ResourceManager::HexToColor(doorJson.value("border_color", "#5C4033"));
+            doors.push_back(door);
+        }
+    }
+
+    // Load Items
+    if (j.contains("items") && j["items"].is_array()) {
+        for (const auto& itemJson : j["items"]) {
+            std::string artifactId = itemJson.value("artifact_id", "item");
+            std::string name = itemJson.value("name", "Item");
+            
+            Rectangle rect;
+            if (itemJson.contains("rect")) {
+                auto r = itemJson["rect"];
+                rect = Rectangle{
+                    r.value("x", 0.0f),
+                    r.value("y", 0.0f),
+                    r.value("width", 90.0f),
+                    r.value("height", 90.0f)
+                };
+            } else {
+                rect = Rectangle{ 500.0f, groundY - 90.0f, 90.0f, 90.0f };
+            }
+
+            Color color = ResourceManager::HexToColor(itemJson.value("color", "#87CEEB"));
+            Color borderColor = ResourceManager::HexToColor(itemJson.value("border_color", "#00008B"));
+            std::string dialogueFile = itemJson.value("dialogue_file", "");
+
+            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile);
+
+            // Register with MemoryManager
+            int roomId = 0;
+            if (sceneId.rfind("room", 0) == 0 && sceneId.length() > 4) {
+                try { roomId = std::stoi(sceneId.substr(4)); } catch (...) {}
+            }
+            MemoryManager::Get().RegisterArtifact(artifactId, name, color, borderColor, roomId);
+        }
+    }
+
+    // Shader support
+    if (j.contains("shader") && j["shader"].contains("path")) {
+        shaderPath = j["shader"]["path"].get<std::string>();
+        sceneShader = ResourceManager::Get().GetShader(shaderPath);
+    }
+}
+
+void DynamicScene::Update(float dt) {
+    SceneManager::Get().SetTabPressed(IsKeyDown(KEY_TAB));
+
+    // Hot-reload scene JSON when pressing R
+    if (IsKeyPressed(KEY_R)) {
+        LoadFromConfigFile(jsonPath);
+    }
+
+    // Update effects
+    EffectManager::Get().Update(dt);
+
+    // Pause if Tab memory archive is open
+    if (IsKeyDown(KEY_TAB)) {
+        holdQTimer = 0.0f;
+        return;
+    }
+
+    // Update dialogue system
+    DialogueManager::Get().Update(dt);
+
+    // Freeze player if dialogue is active
+    if (DialogueManager::Get().IsActive()) {
+        promptText = "";
+        holdQTimer = 0.0f;
+        activeHoverItem = nullptr;
+        return;
+    }
+
+    // Normal player movement
+    player.Update(dt, screenWidth);
+
+    promptText = "";
+    activeHoverItem = nullptr;
+
+    // Check interaction with Doors
+    for (const auto& door : doors) {
+        if (CheckCollisionRecs(player.rect, door.rect)) {
+            promptText = "Press [E] to enter " + door.label;
+            holdQTimer = 0.0f;
+            if (IsKeyPressed(KEY_E)) {
+                SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX));
+                return;
+            }
+        }
+    }
+
+    // Check interaction with Room items
+    for (auto& item : items) {
+        if (item.CheckCollision(player.rect)) {
+            activeHoverItem = &item;
+            bool isRemembered = MemoryManager::Get().IsRemembered(item.artifactId);
+
+            if (isRemembered) {
+                promptText = "[E] Inspect | [Hold Q] Forget Memory";
+            } else {
+                promptText = "[E] Inspect | [Hold Q] Remember Memory";
+            }
+
+            if (IsKeyDown(KEY_Q)) {
+                holdQTimer += dt;
+                if (holdQTimer >= holdQThreshold) {
+                    holdQTimer = 0.0f;
+                    if (!isRemembered) {
+                        MemoryManager::Get().SetRemembered(item.artifactId, true);
+                        if (!item.dialogueFile.empty()) {
+                            DialogueManager::Get().StartDialogueFile(item.dialogueFile, true /* isMemoryMode */, item.artifactId);
+                        }
+                    } else {
+                        MemoryManager::Get().SetRemembered(item.artifactId, false);
+                        EffectManager::Get().SpawnForgettingEffect(item.rect, item.color);
+                    }
+                    promptText = "";
+                    return;
+                }
+            } else {
+                holdQTimer = 0.0f;
+                if (IsKeyPressed(KEY_E)) {
+                    item.Interact();
+                    promptText = "";
+                    return;
+                }
+            }
+            break;
+        }
+    }
+
+    if (!activeHoverItem) {
+        holdQTimer = 0.0f;
+    }
+}
+
+void DynamicScene::DrawHoldQGauge(Vector2 centerPos, float progress, bool isRemembering) {
+    float radius = 32.0f;
+    DrawCircleSector(centerPos, radius + 6.0f, 0, 360, 36, Fade(BLACK, 0.7f));
+    DrawCircleSectorLines(centerPos, radius + 6.0f, 0, 360, 36, Fade(GRAY, 0.6f));
+
+    Color arcColor = isRemembering ? GOLD : RED;
+    DrawCircleSector(centerPos, radius, 0, progress * 360.0f, 36, arcColor);
+    DrawCircleSectorLines(centerPos, radius, 0, 360.0f, 36, Fade(WHITE, 0.8f));
+
+    DrawText("Q", (int)centerPos.x - 7, (int)centerPos.y - 12, 24, BLACK);
+
+    const char* actionLabel = isRemembering ? "Remembering..." : "Forgetting...";
+    int textW = MeasureText(actionLabel, 20);
+    DrawText(actionLabel, (int)centerPos.x - textW / 2, (int)centerPos.y + 40, 20, isRemembering ? GOLD : ORANGE);
+}
+
+void DynamicScene::Draw() {
+    ClearBackground(backgroundColor);
+
+    if (sceneShader.id != 0) {
+        BeginShaderMode(sceneShader);
+    }
+
+    // Floor Line
+    DrawLine(0, (int)groundY, (int)screenWidth, (int)groundY, DARKGRAY);
+
+    // Scene Header Title
+    DrawText(title.c_str(), 40, 40, 48, DARKGRAY);
+
+    // Draw Doors
+    for (const auto& door : doors) {
+        DrawRectangleRec(door.rect, door.doorColor);
+        DrawRectangleLinesEx(door.rect, 4, door.borderColor);
+        DrawCircle((int)(door.rect.x + door.rect.width - 20), (int)(door.rect.y + 120), 8, GOLD);
+
+        int labelWidth = MeasureText(door.label.c_str(), 32);
+        DrawText(door.label.c_str(),
+                 (int)(door.rect.x + (door.rect.width - labelWidth) / 2.0f),
+                 (int)(door.rect.y - 50), 32, door.borderColor);
+    }
+
+    // Draw Items
+    for (const auto& item : items) {
+        item.Draw();
+    }
+
+    // Draw Visual Effects
+    EffectManager::Get().Draw();
+
+    // Player
+    player.Draw();
+
+    if (sceneShader.id != 0) {
+        EndShaderMode();
+    }
+
+    // Draw Hold Q Gauge if currently charging
+    if (holdQTimer > 0.0f && activeHoverItem) {
+        Vector2 gaugePos = { activeHoverItem->rect.x + activeHoverItem->rect.width / 2.0f, activeHoverItem->rect.y - 80.0f };
+        bool isRem = !MemoryManager::Get().IsRemembered(activeHoverItem->artifactId);
+        DrawHoldQGauge(gaugePos, holdQTimer / holdQThreshold, isRem);
+    }
+
+    // Interaction Banner / Controls Guidance
+    if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB)) {
+        if (!promptText.empty()) {
+            int textWidth = MeasureText(promptText.c_str(), 36);
+            int bannerX = ((int)screenWidth - textWidth - 80) / 2;
+            DrawRectangle(bannerX, 690, textWidth + 80, 70, Fade(DARKGRAY, 0.85f));
+            DrawText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 706, 36, WHITE);
+        } else {
+            DrawText(controlsHint.c_str(), 40, 736, 30, GRAY);
+        }
+
+        const char* tabHint = "[Hold TAB] Memory Archive | [R] Reload Scene";
+        int tabW = MeasureText(tabHint, 24);
+        DrawText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
+    }
+
+    // Draw Dialogue Overlay
+    DialogueManager::Get().Draw();
+}

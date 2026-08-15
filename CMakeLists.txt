@@ -51,8 +51,17 @@ if(EMSCRIPTEN)
     )
 endif()
 
+# Fetch nlohmann/json
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(json)
+
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib nlohmann_json::nlohmann_json)
 target_include_directories(${PROJECT_NAME} PRIVATE ${raylib_cpp_SOURCE_DIR}/include src)
 
 # Copy assets directory to the output directory so the executable can find them

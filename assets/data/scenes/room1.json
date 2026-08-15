@@ -1,0 +1,35 @@
+{
+  "id": "room1",
+  "title": "ROOM 1",
+  "ground_y": 660.0,
+  "background_color": "#F5F5F5",
+  "controls_hint": "Controls: [A/D] to Move | [E] Inspect | [Hold Q] Remember/Forget",
+  "doors": [
+    {
+      "label": "Corridor",
+      "rect": { "x": 100.0, "y": 420.0, "width": 130.0, "height": 240.0 },
+      "target_scene": "corridor",
+      "target_spawn_x": 424.0,
+      "door_color": "#8B4513",
+      "border_color": "#5C4033"
+    }
+  ],
+  "items": [
+    {
+      "artifact_id": "sapphire_prism",
+      "name": "Sapphire Prism",
+      "rect": { "x": 700.0, "y": 570.0, "width": 90.0, "height": 90.0 },
+      "color": "#87CEEB",
+      "border_color": "#00008B",
+      "dialogue_file": "assets/data/dialogues/sapphire_prism.json"
+    },
+    {
+      "artifact_id": "emerald_relic",
+      "name": "Emerald Relic",
+      "rect": { "x": 1450.0, "y": 570.0, "width": 90.0, "height": 90.0 },
+      "color": "#00FF00",
+      "border_color": "#006400",
+      "dialogue_file": "assets/data/dialogues/emerald_relic.json"
+    }
+  ]
+}

@@ -6,12 +6,19 @@
 InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const DialogueTree& dialogue)
     : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogue(dialogue) {}
 
+InteractableItem::InteractableItem(const std::string& artifactId, Rectangle rect, Color color, Color borderColor, const std::string& name, const std::string& dialogueFile)
+    : artifactId(artifactId), rect(rect), color(color), borderColor(borderColor), name(name), dialogueFile(dialogueFile) {}
+
 bool InteractableItem::CheckCollision(const Rectangle& playerRect) const {
     return CheckCollisionRecs(playerRect, rect);
 }
 
 void InteractableItem::Interact() {
-    DialogueManager::Get().StartDialogue(dialogue, false, artifactId);
+    if (!dialogueFile.empty()) {
+        DialogueManager::Get().StartDialogueFile(dialogueFile, false, artifactId);
+    } else {
+        DialogueManager::Get().StartDialogue(dialogue, false, artifactId);
+    }
 }
 
 void InteractableItem::Draw() const {

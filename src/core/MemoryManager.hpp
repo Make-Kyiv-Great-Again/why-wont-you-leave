@@ -19,6 +19,7 @@ public:
 
     bool IsRemembered(const std::string& id) const;
     void SetRemembered(const std::string& id, bool remembered);
+    void RegisterArtifact(const std::string& id, const std::string& name, Color color, Color borderColor, int roomId);
     void SaveChoice(const std::string& id, const std::string& choice);
     std::string GetSavedChoice(const std::string& id) const;
     const std::vector<MemoryArtifact>& GetAllArtifacts() const;

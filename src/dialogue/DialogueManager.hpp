@@ -8,6 +8,7 @@ public:
     static DialogueManager& Get();
 
     void StartDialogue(const DialogueTree& tree, bool isMemory = false, const std::string& artifactId = "");
+    void StartDialogueFile(const std::string& jsonPath, bool isMemory = false, const std::string& artifactId = "");
     bool IsActive() const;
     bool IsMemoryMode() const;
     void Update(float dt);

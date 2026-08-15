@@ -33,6 +33,13 @@ void MemoryManager::SetRemembered(const std::string& id, bool remembered) {
     }
 }
 
+void MemoryManager::RegisterArtifact(const std::string& id, const std::string& name, Color color, Color borderColor, int roomId) {
+    for (const auto& art : artifacts) {
+        if (art.id == id) return; // Already registered
+    }
+    artifacts.push_back({ id, name, color, borderColor, false, "", roomId });
+}
+
 void MemoryManager::SaveChoice(const std::string& id, const std::string& choice) {
     for (auto& art : artifacts) {
         if (art.id == id) {

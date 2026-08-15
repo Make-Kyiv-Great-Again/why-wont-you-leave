@@ -1,0 +1,36 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "THE VOICE",
+      "text": "You touch the Emerald Relic. A soft, soothing hum resonates through your fingertips.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "THE VOICE",
+      "text": "Does the sheer silence of this chamber calm your spirit, or does it disturb you?",
+      "next_id": -1,
+      "options": [
+        { "text": "It feels quiet and peaceful.", "target_id": 2 },
+        { "text": "It feels eerie and unnatural.", "target_id": 3 }
+      ]
+    },
+    {
+      "id": 2,
+      "speaker": "THE VOICE",
+      "text": "Peace is rare in these domains. Treasure this serenity before your next journey.",
+      "next_id": -1,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "THE VOICE",
+      "text": "Unnatural? Perhaps. But fear is merely an illusion cast by unfamiliar spaces.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 #include "raylib.h"
 #include "core/SceneManager.hpp"
-#include "scenes/CorridorScene.hpp"
+#include "scenes/DynamicScene.hpp"
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>
@@ -23,7 +23,7 @@ int main() {
     InitWindow(screenWidth, screenHeight, "2D Room Navigation Game");
 
     SceneManager::Get().Init(screenWidth, screenHeight);
-    SceneManager::Get().ChangeScene(std::make_unique<CorridorScene>());
+    SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 0, 1);

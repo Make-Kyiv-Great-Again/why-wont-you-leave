@@ -1,5 +1,6 @@
 #include "dialogue/DialogueManager.hpp"
 #include "core/MemoryManager.hpp"
+#include "core/ResourceManager.hpp"
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -17,6 +18,14 @@ void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, con
     isMemoryMode = isMemory;
     activeArtifactId = artifactId;
     pulseTimer = 0.0f;
+}
+
+void DialogueManager::StartDialogueFile(const std::string& jsonPath, bool isMemory, const std::string& artifactId) {
+    nlohmann::json j = ResourceManager::Get().LoadJson(jsonPath);
+    if (!j.is_null()) {
+        DialogueTree tree = Dialogues::FromJson(j);
+        StartDialogue(tree, isMemory, artifactId);
+    }
 }
 
 bool DialogueManager::IsActive() const {
