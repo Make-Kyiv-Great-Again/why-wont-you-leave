@@ -4,6 +4,7 @@
 #include "core/MemoryManager.hpp"
 #include "core/EffectManager.hpp"
 #include "core/ResourceManager.hpp"
+#include "core/ActManager.hpp"
 #include "scenes/MainMenuScene.hpp"
 #include <nlohmann/json.hpp>
 #include <cmath>
@@ -112,10 +113,23 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
         }
     }
 
-    // Load Items
+    // Load Items (filtered by current Act and vanished status)
+    int currentAct = ActManager::Get().GetCurrentAct();
     if (j.contains("items") && j["items"].is_array()) {
         for (const auto& itemJson : j["items"]) {
             std::string artifactId = itemJson.value("artifact_id", "item");
+            
+            // Check if item belongs to current or past acts
+            int itemAct = ActManager::GetArtifactAct(artifactId);
+            if (itemAct > currentAct) {
+                continue;
+            }
+
+            // If already remembered/vanished, do not spawn
+            if (ActManager::Get().IsArtifactVanished(artifactId)) {
+                continue;
+            }
+
             std::string name = itemJson.value("name", "Item");
             
             Rectangle rect;
@@ -153,9 +167,10 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
 
             // Register with MemoryManager
             int roomId = 0;
-            if (sceneId.rfind("room", 0) == 0 && sceneId.length() > 4) {
-                try { roomId = std::stoi(sceneId.substr(4)); } catch (...) {}
-            }
+            if (sceneId == "bedroom") roomId = 1;
+            else if (sceneId == "bathroom") roomId = 2;
+            else if (sceneId == "kitchen") roomId = 3;
+            else if (sceneId == "corridor") roomId = 0;
             MemoryManager::Get().RegisterArtifact(artifactId, name, color, borderColor, roomId);
         }
     }
@@ -313,48 +328,59 @@ void DynamicScene::Update(float dt) {
     // Check interaction with Doors
     for (const auto& door : doors) {
         if (CheckCollisionRecs(player.rect, door.rect)) {
-            promptText = "Press [E] to enter " + door.label;
-            holdQTimer = 0.0f;
-            if (IsKeyPressed(KEY_E)) {
-                SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX, door.targetDoor));
-                return;
-            }
-        }
-    }
-
-    // Check interaction with Room items
-    for (auto& item : items) {
-        if (item.CheckCollision(player.rect)) {
-            activeHoverItem = &item;
-            bool isRemembered = MemoryManager::Get().IsRemembered(item.artifactId);
-
-            if (isRemembered) {
-                promptText = "[E] Inspect | [Hold Q] Forget Memory";
-            } else {
-                promptText = "[E] Inspect | [Hold Q] Remember Memory";
-            }
-
-            if (IsKeyDown(KEY_Q)) {
-                holdQTimer += dt;
-                if (holdQTimer >= holdQThreshold) {
-                    holdQTimer = 0.0f;
-                    if (!isRemembered) {
-                        MemoryManager::Get().SetRemembered(item.artifactId, true);
-                        if (!item.dialogueFile.empty()) {
-                            DialogueManager::Get().StartDialogueFile(item.dialogueFile, true /* isMemoryMode */, item.artifactId);
+            if (door.targetScene == "exit_door") {
+                int curAct = ActManager::Get().GetCurrentAct();
+                if (curAct == 1) {
+                    if (ActManager::Get().CanUseExitDoor()) {
+                        promptText = "Press [E] to Exit the Apartment";
+                        if (IsKeyPressed(KEY_E)) {
+                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act1_exit.json");
+                            return;
                         }
                     } else {
-                        MemoryManager::Get().SetRemembered(item.artifactId, false);
-                        EffectManager::Get().SpawnForgettingEffect(item.rect, item.color);
+                        promptText = "Exit is locked (Explore more memories first)";
                     }
-                    promptText = "";
+                } else if (curAct == 2) {
+                    if (ActManager::Get().CanUseExitDoor()) {
+                        promptText = "Press [E] to Approach Exit";
+                        if (IsKeyPressed(KEY_E)) {
+                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act2_voice.json");
+                            return;
+                        }
+                    } else {
+                        promptText = "Exit is locked (Explore more memories first)";
+                    }
+                } else if (curAct == 3) {
+                    if (ActManager::Get().CanUseExitDoor()) {
+                        promptText = "Press [E] to Approach Exit";
+                        if (IsKeyPressed(KEY_E)) {
+                            DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act3_voice.json");
+                            return;
+                        }
+                    } else {
+                        promptText = "Exit is locked (Explore more memories first)";
+                    }
+                } else if (curAct == 4) {
+                    if (ActManager::Get().CanUseExitDoor()) {
+                        promptText = "Press [E] to Step Through Exit";
+                        if (IsKeyPressed(KEY_E)) {
+                            SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("the_door"));
+                            return;
+                        }
+                    } else {
+                        promptText = "Exit is locked (Find the Windshield Fragment)";
+                    }
+                }
+            } else if (door.targetScene == "act5_choice") {
+                promptText = "Press [E] to open THE DOOR";
+                if (IsKeyPressed(KEY_E)) {
+                    DialogueManager::Get().StartDialogueFile("assets/data/dialogues/act5_leave_choice.json");
                     return;
                 }
             } else {
-                holdQTimer = 0.0f;
+                promptText = "Press [E] to enter " + door.label;
                 if (IsKeyPressed(KEY_E)) {
-                    item.Interact();
-                    promptText = "";
+                    SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>(door.targetScene, door.targetSpawnX, door.targetDoor));
                     return;
                 }
             }
@@ -362,8 +388,19 @@ void DynamicScene::Update(float dt) {
         }
     }
 
-    if (!activeHoverItem) {
-        holdQTimer = 0.0f;
+    // Check interaction with Room items
+    for (auto it = items.begin(); it != items.end(); ++it) {
+        if (it->CheckCollision(player.rect)) {
+            activeHoverItem = &(*it);
+            promptText = "Press [E] to Examine " + it->name;
+
+            if (IsKeyPressed(KEY_E)) {
+                it->Interact();
+                promptText = "";
+                return;
+            }
+            break;
+        }
     }
 }
 
@@ -389,8 +426,8 @@ void DynamicScene::DrawPauseOverlay() {
 
     // 2. Pause Header
     const char* pauseTitle = "GAME PAUSED";
-    int titleW = MeasureText(pauseTitle, 50);
-    DrawText(pauseTitle, (int)(screenWidth - titleW) / 2, 240, 50, GOLD);
+    int titleW = ResourceManager::MeasureGameText(pauseTitle, 50);
+    ResourceManager::DrawGameText(pauseTitle, (int)(screenWidth - titleW) / 2, 240, 50, GOLD);
 
     // 3. Helper Lambda to draw SVG pause buttons (NO text overlays)
     float time = (float)GetTime();
@@ -416,10 +453,6 @@ void DynamicScene::DrawPauseOverlay() {
                 0.0f,
                 tintColor
             );
-
-            if (isSelected) {
-                DrawRectangleLinesEx(drawRect, 3.0f, GOLD);
-            }
         } else {
             Color boxColor = isSelected ? GOLD : DARKGRAY;
             DrawRectangleRec(drawRect, boxColor);
@@ -433,23 +466,24 @@ void DynamicScene::DrawPauseOverlay() {
 
     // Guidance footer
     const char* pauseHint = "Press [ESC] to Resume Gameplay | [A/D / Mouse] to Select";
-    int hintW = MeasureText(pauseHint, 24);
-    DrawText(pauseHint, (int)(screenWidth - hintW) / 2, 700, 24, Fade(WHITE, 0.85f));
+    int hintW = ResourceManager::MeasureGameText(pauseHint, 24);
+    ResourceManager::DrawGameText(pauseHint, (int)(screenWidth - hintW) / 2, 700, 24, Fade(WHITE, 0.85f));
 
     // Options Popup Overlay inside Pause
     if (showPauseOptions) {
         DrawRectangle(400, 200, 1200, 400, Fade(BLACK, 0.92f));
         DrawRectangleLinesEx(Rectangle{ 400, 200, 1200, 400 }, 4.0f, GOLD);
         
-        DrawText("OPTIONS / SETTINGS", 760, 250, 40, GOLD);
-        DrawText("- Fullscreen Mode: Press F11 or Alt+Enter at any time", 500, 340, 28, WHITE);
-        DrawText("- Hot Reload Scenes: Press R during gameplay", 500, 390, 28, WHITE);
-        DrawText("Press [Enter] or click Options again to close", 650, 520, 24, GRAY);
+        ResourceManager::DrawGameText("OPTIONS / SETTINGS", 760, 250, 40, GOLD);
+        ResourceManager::DrawGameText("- Fullscreen Mode: Press F11 or Alt+Enter at any time", 500, 340, 28, WHITE);
+        ResourceManager::DrawGameText("- Hot Reload Scenes: Press R during gameplay", 500, 390, 28, WHITE);
+        ResourceManager::DrawGameText("Press [Enter] or click Options again to close", 650, 520, 24, GRAY);
     }
 }
 
 void DynamicScene::Draw() {
-    ClearBackground(backgroundColor);
+    Color actTint = ActManager::Get().GetActLightingTint();
+    ClearBackground(sceneId == "the_door" ? BLACK : backgroundColor);
 
     if (sceneShader.id != 0) {
         BeginShaderMode(sceneShader);
@@ -465,21 +499,33 @@ void DynamicScene::Draw() {
                 Rectangle{ 0, 0, screenWidth, screenHeight },
                 Vector2{ 0, 0 },
                 0.0f,
-                WHITE
+                actTint
             );
         }
     }
 
-    // Scene Header Title
-    ResourceManager::DrawGameText(title.c_str(), 40, 40, 48, DARKGRAY);
+    // Scene Header Title with Act Name
+    if (sceneId != "the_door") {
+        std::string fullTitle = ActManager::Get().GetActTitle() + "   |   " + title;
+        ResourceManager::DrawGameText(fullTitle.c_str(), 40, 40, 44, DARKGRAY);
+    }
 
     // Draw Doors
+    float time = (float)GetTime();
     for (const auto& door : doors) {
         if (!door.isVisible) {
             continue; // Skip rendering for invisible/background-integrated doors
         }
 
-        if (door.sprite.IsValid()) {
+        if (sceneId == "the_door") {
+            // White Door glowing effect
+            float glowPulse = (sinf(time * 3.0f) + 1.0f) * 0.5f;
+            Rectangle glowRect = { door.rect.x - 12.0f - glowPulse * 6.0f, door.rect.y - 12.0f - glowPulse * 6.0f,
+                                   door.rect.width + 24.0f + glowPulse * 12.0f, door.rect.height + 24.0f + glowPulse * 12.0f };
+            DrawRectangleRec(glowRect, Fade(WHITE, 0.25f + glowPulse * 0.2f));
+            DrawRectangleRec(door.rect, WHITE);
+            DrawRectangleLinesEx(door.rect, 4.0f, GOLD);
+        } else if (door.sprite.IsValid()) {
             door.sprite.Draw(door.rect);
             DrawRectangleLinesEx(door.rect, 4, door.borderColor);
         } else {
@@ -491,7 +537,7 @@ void DynamicScene::Draw() {
         int labelWidth = ResourceManager::MeasureGameText(door.label.c_str(), 32);
         ResourceManager::DrawGameText(door.label.c_str(),
                  (int)(door.rect.x + (door.rect.width - labelWidth) / 2.0f),
-                 (int)(door.rect.y - 50), 32, door.borderColor);
+                 (int)(door.rect.y - 50), 32, (sceneId == "the_door") ? WHITE : door.borderColor);
     }
 
     // Draw Items
@@ -513,13 +559,6 @@ void DynamicScene::Draw() {
 
     if (sceneShader.id != 0) {
         EndShaderMode();
-    }
-
-    // Draw Hold Q Gauge if currently charging
-    if (holdQTimer > 0.0f && activeHoverItem) {
-        Vector2 gaugePos = { activeHoverItem->rect.x + activeHoverItem->rect.width / 2.0f, activeHoverItem->rect.y - 80.0f };
-        bool isRem = !MemoryManager::Get().IsRemembered(activeHoverItem->artifactId);
-        DrawHoldQGauge(gaugePos, holdQTimer / holdQThreshold, isRem);
     }
 
     // Interaction Banner

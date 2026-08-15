@@ -1,0 +1,85 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Her handwriting.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "She wrote this to me.",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "But she never gave it to me.",
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Grace",
+      "text": "Evan,",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Grace",
+      "text": "I don't know how to tell you this.",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Grace",
+      "text": "I know you'll be angry.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Grace",
+      "text": "But you have to go.",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "Grace",
+      "text": "You have a chance.",
+      "next_id": 105,
+      "options": []
+    },
+    {
+      "id": 105,
+      "speaker": "Grace",
+      "text": "I don't want you to spend your whole life—",
+      "next_id": 106,
+      "options": []
+    },
+    {
+      "id": 106,
+      "speaker": "",
+      "text": "*The memory abruptly ends.*",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

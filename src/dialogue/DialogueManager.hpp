@@ -21,10 +21,12 @@ private:
     DialogueManager& operator=(const DialogueManager&) = delete;
 
     void DrawWrappedText(const char* text, int posX, int posY, int fontSize, int maxLineWidth, Color color);
+    void OnDialogueFinished();
 
     bool isActive = false;
     bool isMemoryMode = false;
     std::string activeArtifactId = "";
+    std::string activeScriptPath = "";
     DialogueTree currentTree;
     const DialogueNode* currentNode = nullptr;
     int selectedOption = 0;

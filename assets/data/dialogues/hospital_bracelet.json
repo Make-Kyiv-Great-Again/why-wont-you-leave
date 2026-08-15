@@ -1,0 +1,106 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "A hospital bracelet.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "My name.",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "Why do I have this?",
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Doctor",
+      "text": "Male patient, nineteen.",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Nurse",
+      "text": "Pulse?",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Doctor",
+      "text": "Weak.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Doctor",
+      "text": "We've lost the second patient.",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "Monitor",
+      "text": "Beep... beep... beep...",
+      "next_id": 200,
+      "options": []
+    },
+    {
+      "id": 200,
+      "speaker": "THE VOICE",
+      "text": "She died.",
+      "next_id": 201,
+      "options": []
+    },
+    {
+      "id": 201,
+      "speaker": "Evan",
+      "text": "Yes.",
+      "next_id": 202,
+      "options": []
+    },
+    {
+      "id": 202,
+      "speaker": "THE VOICE",
+      "text": "You lived.",
+      "next_id": 203,
+      "options": []
+    },
+    {
+      "id": 203,
+      "speaker": "Evan",
+      "text": "Yes.",
+      "next_id": 204,
+      "options": []
+    },
+    {
+      "id": 204,
+      "speaker": "THE VOICE",
+      "text": "Why?",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

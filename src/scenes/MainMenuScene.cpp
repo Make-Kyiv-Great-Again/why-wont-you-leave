@@ -1,7 +1,10 @@
 #include "scenes/MainMenuScene.hpp"
 #include "core/SceneManager.hpp"
 #include "core/ResourceManager.hpp"
+#include "core/ActManager.hpp"
+#include "dialogue/DialogueManager.hpp"
 #include "scenes/DynamicScene.hpp"
+#include "scenes/IntroScene.hpp"
 #include <cmath>
 
 MainMenuScene::MainMenuScene() {
@@ -65,7 +68,8 @@ void MainMenuScene::Update(float dt) {
             if (SceneManager::Get().HasSavedGameplayScene()) {
                 SceneManager::Get().ResumeGame();
             } else {
-                SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+                ActManager::Get().Reset();
+                SceneManager::Get().ChangeScene(std::make_unique<IntroScene>());
             }
         } else if (selectedButtonIndex == 1) {
             // Options toggle
@@ -123,10 +127,6 @@ void MainMenuScene::Draw() {
                 0.0f,
                 tintColor
             );
-
-            if (isSelected) {
-                DrawRectangleLinesEx(drawRect, 3.0f, GOLD);
-            }
         } else {
             // Fallback rectangle if texture fails
             Color boxColor = isSelected ? GOLD : DARKGRAY;

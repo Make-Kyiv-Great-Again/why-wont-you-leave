@@ -1,0 +1,64 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "Don't forget what you promised.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "What did I promise?",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Evan",
+      "text": "I said I'd remember.",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Grace",
+      "text": "You forgot last year.",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Evan",
+      "text": "I was busy.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Grace",
+      "text": "You're always busy.",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "",
+      "text": "*They laugh.*",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

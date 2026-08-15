@@ -1,0 +1,71 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "A ticket.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "My name.",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "It's for today.",
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Grace",
+      "text": "Your ticket is ready.",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Evan",
+      "text": "My ticket?",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Grace",
+      "text": "Yes.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Evan",
+      "text": "Where's yours?",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "",
+      "text": "*Silence.*",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

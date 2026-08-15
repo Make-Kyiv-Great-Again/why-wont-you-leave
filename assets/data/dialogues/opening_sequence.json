@@ -1,0 +1,33 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "",
+      "text": "*Rain hitting the windshield... Wipers sweeping frantically...*",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "Evan, please slow down...",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "",
+      "text": "*Tires screeching. A blinding glare of headlights. Impact.*",
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Evan",
+      "text": "Where... where am I? The apartment...?",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

@@ -24,5 +24,38 @@
       "is_visible": false
     }
   ],
-  "items": []
+  "items": [
+    {
+      "artifact_id": "torn_envelope",
+      "name": "Trash Bin Envelope",
+      "rect": { "x": 450.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "color": "#A9A9A9",
+      "border_color": "#4F4F4F",
+      "dialogue_file": "assets/data/dialogues/torn_envelope.json"
+    },
+    {
+      "artifact_id": "bank_receipt",
+      "name": "Drawer Bank Receipt",
+      "rect": { "x": 900.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "color": "#8FBC8F",
+      "border_color": "#2E8B57",
+      "dialogue_file": "assets/data/dialogues/bank_receipt.json"
+    },
+    {
+      "artifact_id": "ticket",
+      "name": "Train/Plane Ticket",
+      "rect": { "x": 900.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "color": "#DEB887",
+      "border_color": "#8B5A2B",
+      "dialogue_file": "assets/data/dialogues/ticket.json"
+    },
+    {
+      "artifact_id": "spare_key",
+      "name": "Spare Key",
+      "rect": { "x": 1350.0, "y": 690.0, "width": 60.0, "height": 60.0 },
+      "color": "#B8860B",
+      "border_color": "#664D00",
+      "dialogue_file": "assets/data/dialogues/spare_key.json"
+    }
+  ]
 }

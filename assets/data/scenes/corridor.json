@@ -17,8 +17,17 @@
   },
   "doors": [
     {
+      "label": "Exit Door",
+      "rect": { "x": 100.0, "y": 480.0, "width": 140.0, "height": 280.0 },
+      "target_scene": "exit_door",
+      "target_door": "Corridor",
+      "door_color": "#3B2F2F",
+      "border_color": "#1C140E",
+      "texture": "assets/sprites/door.png"
+    },
+    {
       "label": "Bathroom",
-      "rect": { "x": 250.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 550.0, "y": 520.0, "width": 130.0, "height": 240.0 },
       "target_scene": "bathroom",
       "target_door": "Corridor",
       "door_color": "#8B4513",
@@ -27,7 +36,7 @@
     },
     {
       "label": "Bedroom",
-      "rect": { "x": 700.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 1000.0, "y": 520.0, "width": 130.0, "height": 240.0 },
       "target_scene": "bedroom",
       "target_door": "Corridor",
       "door_color": "#8B4513",
@@ -36,22 +45,30 @@
     },
     {
       "label": "Kitchen",
-      "rect": { "x": 1150.0, "y": 520.0, "width": 130.0, "height": 240.0 },
+      "rect": { "x": 1450.0, "y": 520.0, "width": 130.0, "height": 240.0 },
       "target_scene": "kitchen",
       "target_door": "Corridor",
       "door_color": "#8B4513",
       "border_color": "#5C4033",
       "texture": "assets/sprites/door.png"
-    },
-    {
-      "label": "Room 4 (Secret)",
-      "rect": { "x": 1600.0, "y": 520.0, "width": 130.0, "height": 240.0 },
-      "target_scene": "room4",
-      "target_door": "Corridor",
-      "door_color": "#2B1B17",
-      "border_color": "#8B0000",
-      "texture": "assets/sprites/door.png"
     }
   ],
-  "items": []
+  "items": [
+    {
+      "artifact_id": "car_keys",
+      "name": "Car Keys",
+      "rect": { "x": 280.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "color": "#D4AF37",
+      "border_color": "#8C721E",
+      "dialogue_file": "assets/data/dialogues/car_keys.json"
+    },
+    {
+      "artifact_id": "photo_other_man",
+      "name": "Coat Pocket Photo",
+      "rect": { "x": 380.0, "y": 680.0, "width": 70.0, "height": 70.0 },
+      "color": "#4A6B82",
+      "border_color": "#203A43",
+      "dialogue_file": "assets/data/dialogues/photo_other_man.json"
+    }
+  ]
 }

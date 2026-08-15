@@ -1,0 +1,92 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "That's us.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "I don't remember taking this.",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Grace",
+      "text": "You're doing it again.",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Evan",
+      "text": "Doing what?",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Grace",
+      "text": "Taking pictures when I'm not looking.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Evan",
+      "text": "That's when you look best.",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "Grace",
+      "text": "Delete it.",
+      "next_id": 105,
+      "options": []
+    },
+    {
+      "id": 105,
+      "speaker": "Evan",
+      "text": "No.",
+      "next_id": 106,
+      "options": []
+    },
+    {
+      "id": 106,
+      "speaker": "Grace",
+      "text": "Evan.",
+      "next_id": 107,
+      "options": []
+    },
+    {
+      "id": 107,
+      "speaker": "Evan",
+      "text": "No.",
+      "next_id": 108,
+      "options": []
+    },
+    {
+      "id": 108,
+      "speaker": "",
+      "text": "*Grace laughs.*",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

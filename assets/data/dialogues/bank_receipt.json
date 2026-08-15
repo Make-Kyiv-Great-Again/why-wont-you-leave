@@ -1,0 +1,113 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "This is Grace's account.",
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Evan",
+      "text": "These payments...",
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "They're for me.",
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "",
+      "text": "Remember this memory?",
+      "next_id": -1,
+      "options": [
+        { "text": "Remember", "target_id": 100 },
+        { "text": "Forget", "target_id": -1 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Evan",
+      "text": "What's this?",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "Grace",
+      "text": "Nothing.",
+      "next_id": 102,
+      "options": []
+    },
+    {
+      "id": 102,
+      "speaker": "Evan",
+      "text": "That's a lot of nothing.",
+      "next_id": 103,
+      "options": []
+    },
+    {
+      "id": 103,
+      "speaker": "Grace",
+      "text": "Don't worry about it.",
+      "next_id": 104,
+      "options": []
+    },
+    {
+      "id": 104,
+      "speaker": "Evan",
+      "text": "You're spending money on me.",
+      "next_id": 105,
+      "options": []
+    },
+    {
+      "id": 105,
+      "speaker": "Grace",
+      "text": "I'm investing.",
+      "next_id": 106,
+      "options": []
+    },
+    {
+      "id": 106,
+      "speaker": "Evan",
+      "text": "In what?",
+      "next_id": 107,
+      "options": []
+    },
+    {
+      "id": 107,
+      "speaker": "Grace",
+      "text": "You.",
+      "next_id": 200,
+      "options": []
+    },
+    {
+      "id": 200,
+      "speaker": "THE VOICE",
+      "text": "She was giving you something.",
+      "next_id": 201,
+      "options": []
+    },
+    {
+      "id": 201,
+      "speaker": "Evan",
+      "text": "What?",
+      "next_id": 202,
+      "options": []
+    },
+    {
+      "id": 202,
+      "speaker": "THE VOICE",
+      "text": "A reason to leave.",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "",
+      "text": "LEAVE?",
+      "next_id": -1,
+      "options": [
+        { "text": "YES", "target_id": 100 },
+        { "text": "NO", "target_id": 200 }
+      ]
+    },
+    {
+      "id": 100,
+      "speaker": "Evan",
+      "text": "You turn the handle and step forward into the white light. The apartment fades away. You carry her memory, but you choose to live.",
+      "next_id": 101,
+      "options": []
+    },
+    {
+      "id": 101,
+      "speaker": "",
+      "text": "[ENDING 1 — ACCEPTANCE] Thank you for playing 'Why Won't You Leave?'",
+      "next_id": -1,
+      "options": []
+    },
+    {
+      "id": 200,
+      "speaker": "Evan",
+      "text": "You let go of the handle and turn back toward the shadows. The apartment reforms around you. Nothing changes. You choose to stay.",
+      "next_id": 201,
+      "options": []
+    },
+    {
+      "id": 201,
+      "speaker": "",
+      "text": "[ENDING 2 — THE LOOP] Thank you for playing 'Why Won't You Leave?'",
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

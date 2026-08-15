@@ -1,0 +1,19 @@
+{
+  "id": "the_door",
+  "title": "THE DOOR",
+  "ground_y": 760.0,
+  "background_color": "#000000",
+  "background_texture": "",
+  "controls_hint": "[A / D] Move | [E] Approach Door",
+  "doors": [
+    {
+      "label": "THE DOOR",
+      "rect": { "x": 920.0, "y": 440.0, "width": 160.0, "height": 320.0 },
+      "target_scene": "act5_choice",
+      "target_door": "",
+      "door_color": "#FFFFFF",
+      "border_color": "#D3D3D3"
+    }
+  ],
+  "items": []
+}

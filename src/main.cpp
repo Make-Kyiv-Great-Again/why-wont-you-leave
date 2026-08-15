@@ -11,7 +11,7 @@ void UpdateDrawFrame() {
 
     // Toggle Fullscreen / Windowed with F11 or Alt+Enter
     if (IsKeyPressed(KEY_F11) || ((IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) && IsKeyPressed(KEY_ENTER))) {
-        ToggleBorderlessWindowed();
+        ToggleFullscreen();
     }
 
     SceneManager::Get().Update(dt);
@@ -34,7 +34,7 @@ int main() {
     // Disable default ESC application quit key
     SetExitKey(KEY_NULL);
 
-    // Query active monitor dimensions & launch in Fullscreen Borderless Mode
+    // Query active monitor dimensions & launch in Fullscreen Mode
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
@@ -44,8 +44,8 @@ int main() {
         SetWindowPosition(0, 0);
     }
 
-    // Toggle into Fullscreen Borderless Mode
-    ToggleBorderlessWindowed();
+    // Toggle into Fullscreen Mode
+    ToggleFullscreen();
 
     InitAudioDevice(); // Initialize audio for typing sfx
 

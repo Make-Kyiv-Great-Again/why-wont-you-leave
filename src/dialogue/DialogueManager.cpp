@@ -1,6 +1,10 @@
 #include "dialogue/DialogueManager.hpp"
 #include "core/MemoryManager.hpp"
 #include "core/ResourceManager.hpp"
+#include "core/ActManager.hpp"
+#include "core/SceneManager.hpp"
+#include "scenes/DynamicScene.hpp"
+#include "scenes/MainMenuScene.hpp"
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -12,10 +16,21 @@ DialogueManager& DialogueManager::Get() {
 
 void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, const std::string& artifactId) {
     currentTree = tree;
-    currentNode = currentTree.GetNode(currentTree.startNodeId);
+    
+    int startNode = currentTree.startNodeId;
+    bool forceMemory = isMemory;
+    
+    if (!artifactId.empty() && ActManager::Get().IsArtifactRemembered(artifactId)) {
+        if (currentTree.GetNode(100) != nullptr) {
+            startNode = 100;
+            forceMemory = true;
+        }
+    }
+
+    currentNode = currentTree.GetNode(startNode);
     selectedOption = 0;
     isActive = (currentNode != nullptr);
-    isMemoryMode = isMemory;
+    isMemoryMode = forceMemory;
     activeArtifactId = artifactId;
     pulseTimer = 0.0f;
 
@@ -25,6 +40,10 @@ void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, con
     displayedText = "";
 
     if (currentNode) {
+        if (currentNode->id >= 100) {
+            isMemoryMode = true;
+        }
+
         Sound sfx = ResourceManager::Get().GetSound("assets/sounds/ui_typing_sound.mp3");
         if (sfx.frameCount > 0) {
             StopSound(sfx);
@@ -47,6 +66,7 @@ void DialogueManager::StartDialogue(const DialogueTree& tree, bool isMemory, con
 }
 
 void DialogueManager::StartDialogueFile(const std::string& jsonPath, bool isMemory, const std::string& artifactId) {
+    activeScriptPath = jsonPath;
     nlohmann::json j = ResourceManager::Get().LoadJson(jsonPath);
     if (!j.is_null()) {
         DialogueTree tree = Dialogues::FromJson(j);
@@ -60,6 +80,43 @@ bool DialogueManager::IsActive() const {
 
 bool DialogueManager::IsMemoryMode() const {
     return isMemoryMode;
+}
+
+void DialogueManager::OnDialogueFinished() {
+    if (!activeArtifactId.empty()) {
+        if (ActManager::Get().IsArtifactRemembered(activeArtifactId)) {
+            ActManager::Get().VanishArtifact(activeArtifactId);
+        }
+    }
+
+    if (activeArtifactId == "windshield_fragment" && ActManager::Get().IsArtifactRemembered("windshield_fragment")) {
+        ActManager::Get().SetAct(5);
+        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("the_door"));
+        return;
+    }
+
+    if (activeScriptPath == "assets/data/dialogues/act1_exit.json") {
+        ActManager::Get().SetAct(2);
+        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        return;
+    }
+
+    if (activeScriptPath == "assets/data/dialogues/act2_voice.json") {
+        ActManager::Get().SetAct(3);
+        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        return;
+    }
+
+    if (activeScriptPath == "assets/data/dialogues/act3_voice.json") {
+        ActManager::Get().SetAct(4);
+        SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+        return;
+    }
+
+    if (activeScriptPath == "assets/data/dialogues/act5_leave_choice.json") {
+        SceneManager::Get().ChangeScene(std::make_unique<MainMenuScene>());
+        return;
+    }
 }
 
 void DialogueManager::Update(float dt) {
@@ -117,8 +174,16 @@ void DialogueManager::Update(float dt) {
 
         // Confirm choice
         if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE)) {
+            std::string chosenText = currentNode->options[selectedOption].text;
             if (!activeArtifactId.empty()) {
-                MemoryManager::Get().SaveChoice(activeArtifactId, currentNode->options[selectedOption].text);
+                MemoryManager::Get().SaveChoice(activeArtifactId, chosenText);
+            }
+
+            if (chosenText == "Remember") {
+                isMemoryMode = true;
+                if (!activeArtifactId.empty()) {
+                    ActManager::Get().MarkArtifactRemembered(activeArtifactId);
+                }
             }
 
             int nextId = currentNode->options[selectedOption].targetNodeId;
@@ -131,12 +196,16 @@ void DialogueManager::Update(float dt) {
             if (nextId == -1) {
                 isActive = false;
                 currentNode = nullptr;
+                OnDialogueFinished();
             } else {
                 currentNode = currentTree.GetNode(nextId);
                 selectedOption = 0;
                 visibleChars = 0;
                 displayedText = "";
                 if (currentNode) {
+                    if (currentNode->id >= 100) {
+                        isMemoryMode = true;
+                    }
                     if (sfx.frameCount > 0) {
                         float soundDuration = (sfx.stream.sampleRate > 0) ? (float)sfx.frameCount / sfx.stream.sampleRate : 0.0f;
                         float defaultSpeed = 0.035f;
@@ -152,6 +221,7 @@ void DialogueManager::Update(float dt) {
                     }
                 } else {
                     isActive = false;
+                    OnDialogueFinished();
                 }
             }
         }
@@ -168,12 +238,16 @@ void DialogueManager::Update(float dt) {
             if (nextNodeId == -1) {
                 isActive = false;
                 currentNode = nullptr;
+                OnDialogueFinished();
             } else {
                 currentNode = currentTree.GetNode(nextNodeId);
                 selectedOption = 0;
                 visibleChars = 0;
                 displayedText = "";
                 if (currentNode) {
+                    if (currentNode->id >= 100) {
+                        isMemoryMode = true;
+                    }
                     if (sfx.frameCount > 0) {
                         float soundDuration = (sfx.stream.sampleRate > 0) ? (float)sfx.frameCount / sfx.stream.sampleRate : 0.0f;
                         float defaultSpeed = 0.035f;
@@ -189,6 +263,7 @@ void DialogueManager::Update(float dt) {
                     }
                 } else {
                     isActive = false;
+                    OnDialogueFinished();
                 }
             }
         }
