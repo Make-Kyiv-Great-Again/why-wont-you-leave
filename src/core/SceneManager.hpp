@@ -3,6 +3,12 @@
 #include "scenes/Scene.hpp"
 #include "raylib.h"
 
+enum class SceneTransitionState {
+    None,
+    FadeOut,
+    FadeIn
+};
+
 class SceneManager {
 public:
     static SceneManager& Get();
@@ -38,4 +44,9 @@ private:
     float tabTransition = 0.0f;
     int screenWidth = 2000;
     int screenHeight = 800;
+
+    // Transition state
+    SceneTransitionState transitionState = SceneTransitionState::None;
+    float transitionAlpha = 0.0f;
+    float transitionSpeed = 5.0f; // ~0.2s fade out, ~0.2s fade in
 };

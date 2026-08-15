@@ -4,7 +4,17 @@
   "ground_y": 760.0,
   "background_color": "#F5F5F5",
   "background_texture": "assets/sprites/kitchen.png",
-  "controls_hint": "",
+  "player_lighting": {
+    "shader": "assets/shaders/glsl330/player_lighting.fs",
+    "ambient_color": "#9C8B7E",
+    "brightness": 0.80,
+    "warmth": 1.06
+  },
+  "dust_particles": {
+    "enabled": true,
+    "count": 40,
+    "color": "#E8DEC8"
+  },
   "doors": [
     {
       "label": "Corridor",

@@ -55,6 +55,19 @@ private:
     Shader sceneShader = { 0 };
     std::string shaderPath;
 
+    // Player Lighting Shader
+    Shader playerLightingShader = { 0 };
+    int ambientColorLoc = -1;
+    int brightnessLoc = -1;
+    int warmthLoc = -1;
+    Vector3 ambientColor = { 1.0f, 1.0f, 1.0f };
+    float playerBrightness = 1.0f;
+    float playerWarmth = 1.0f;
+    bool hasPlayerShader = false;
+
+    // Sparkle Timer
+    float sparkleTimer = 0.0f;
+
     // Pause system
     bool isPaused = false;
     int pauseSelectedBtn = 0; // 0: Options, 1: Exit

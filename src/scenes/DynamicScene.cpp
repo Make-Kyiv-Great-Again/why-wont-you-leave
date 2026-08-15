@@ -160,7 +160,45 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
         }
     }
 
-    // Shader support
+    // Player Lighting Shader support
+    hasPlayerShader = false;
+    if (j.contains("player_lighting") && j["player_lighting"].is_object()) {
+        auto pl = j["player_lighting"];
+        std::string shaderFile = pl.value("shader", "assets/shaders/glsl330/player_lighting.fs");
+        playerLightingShader = ResourceManager::Get().GetShader(shaderFile);
+
+        if (playerLightingShader.id != 0) {
+            hasPlayerShader = true;
+            ambientColorLoc = GetShaderLocation(playerLightingShader, "ambientColor");
+            brightnessLoc   = GetShaderLocation(playerLightingShader, "brightness");
+            warmthLoc       = GetShaderLocation(playerLightingShader, "warmth");
+
+            Color ambCol = ResourceManager::HexToColor(pl.value("ambient_color", "#FFFFFF"));
+            ambientColor = { ambCol.r / 255.0f, ambCol.g / 255.0f, ambCol.b / 255.0f };
+            playerBrightness = pl.value("brightness", 1.0f);
+            playerWarmth     = pl.value("warmth", 1.0f);
+
+            SetShaderValue(playerLightingShader, ambientColorLoc, &ambientColor, SHADER_UNIFORM_VEC3);
+            SetShaderValue(playerLightingShader, brightnessLoc, &playerBrightness, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(playerLightingShader, warmthLoc, &playerWarmth, SHADER_UNIFORM_FLOAT);
+        }
+    }
+
+    // Ambient Dust Particles configuration
+    if (j.contains("dust_particles") && j["dust_particles"].is_object()) {
+        auto dp = j["dust_particles"];
+        bool enabled = dp.value("enabled", true);
+        EffectManager::Get().SetDustEnabled(enabled);
+        if (enabled) {
+            int count = dp.value("count", 60);
+            Color dColor = ResourceManager::HexToColor(dp.value("color", "#FFF8E7"));
+            EffectManager::Get().InitDustParticles(count, dColor);
+        }
+    } else {
+        EffectManager::Get().SetDustEnabled(true);
+    }
+
+    // Scene Shader support
     if (j.contains("shader") && j["shader"].contains("path")) {
         shaderPath = j["shader"]["path"].get<std::string>();
         sceneShader = ResourceManager::Get().GetShader(shaderPath);
@@ -231,6 +269,23 @@ void DynamicScene::Update(float dt) {
 
     // Update effects
     EffectManager::Get().Update(dt);
+
+    // Shimmer glint on interactable doors and items (every ~1.2 seconds)
+    sparkleTimer += dt;
+    if (sparkleTimer >= 1.2f) {
+        sparkleTimer = 0.0f;
+        for (const auto& door : doors) {
+            Vector2 handlePos = {
+                door.rect.x + (door.isVisible ? (door.rect.width - 20.0f) : (door.rect.width * 0.45f)),
+                door.rect.y + (door.isVisible ? 120.0f : 240.0f)
+            };
+            EffectManager::Get().SpawnShimmerGlint(handlePos, 14.0f, Color{ 220, 240, 255, 255 });
+        }
+        for (const auto& item : items) {
+            Vector2 itemCorner = { item.rect.x + item.rect.width * 0.8f, item.rect.y + item.rect.height * 0.2f };
+            EffectManager::Get().SpawnShimmerGlint(itemCorner, 12.0f, Color{ 240, 248, 255, 255 });
+        }
+    }
 
     // Pause if Tab memory archive is open
     if (IsKeyDown(KEY_TAB)) {
@@ -447,8 +502,14 @@ void DynamicScene::Draw() {
     // Draw Visual Effects
     EffectManager::Get().Draw();
 
-    // Player
-    player.Draw();
+    // Player with room-specific lighting shader
+    if (hasPlayerShader && playerLightingShader.id != 0) {
+        BeginShaderMode(playerLightingShader);
+        player.Draw();
+        EndShaderMode();
+    } else {
+        player.Draw();
+    }
 
     if (sceneShader.id != 0) {
         EndShaderMode();

@@ -36,7 +36,14 @@ void SceneManager::Init(int width, int height) {
 }
 
 void SceneManager::ChangeScene(std::unique_ptr<Scene> newScene) {
-    nextScene = std::move(newScene);
+    if (currentScene != nullptr) {
+        nextScene = std::move(newScene);
+        transitionState = SceneTransitionState::FadeOut;
+    } else {
+        currentScene = std::move(newScene);
+        transitionState = SceneTransitionState::None;
+        transitionAlpha = 0.0f;
+    }
 }
 
 void SceneManager::OpenMainMenu() {
@@ -79,19 +86,33 @@ void SceneManager::SetTabPressed(bool pressed) {
 void SceneManager::Update(float dt) {
     // Smooth transition for holding Tab
     if (tabPressed) {
-        tabTransition += dt * 4.0f; // Transition in 0.25 seconds
+        tabTransition += dt * 4.0f;
         if (tabTransition > 1.0f) tabTransition = 1.0f;
     } else {
-        tabTransition -= dt * 4.0f; // Transition out 0.25 seconds
+        tabTransition -= dt * 4.0f;
         if (tabTransition < 0.0f) tabTransition = 0.0f;
     }
 
-    if (nextScene) {
-        currentScene = std::move(nextScene);
-        nextScene = nullptr;
+    // Screen Fade Transition
+    if (transitionState == SceneTransitionState::FadeOut) {
+        transitionAlpha += dt * transitionSpeed;
+        if (transitionAlpha >= 1.0f) {
+            transitionAlpha = 1.0f;
+            if (nextScene) {
+                currentScene = std::move(nextScene);
+                nextScene = nullptr;
+            }
+            transitionState = SceneTransitionState::FadeIn;
+        }
+    } else if (transitionState == SceneTransitionState::FadeIn) {
+        transitionAlpha -= dt * transitionSpeed;
+        if (transitionAlpha <= 0.0f) {
+            transitionAlpha = 0.0f;
+            transitionState = SceneTransitionState::None;
+        }
     }
 
-    if (currentScene) {
+    if (currentScene && transitionState != SceneTransitionState::FadeOut) {
         currentScene->Update(dt);
     }
 }
@@ -103,6 +124,11 @@ void SceneManager::Draw() {
     BeginTextureMode(sceneBuffer);
     ClearBackground(RAYWHITE);
     currentScene->Draw();
+
+    // Fade Transition overlay
+    if (transitionAlpha > 0.0f) {
+        DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, transitionAlpha));
+    }
     EndTextureMode();
 
     // 2. If holding TAB, render Memory Overlay on top of sceneBuffer

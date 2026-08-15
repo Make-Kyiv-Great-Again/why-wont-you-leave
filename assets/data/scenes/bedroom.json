@@ -4,7 +4,17 @@
   "ground_y": 760.0,
   "background_color": "#F5F5F5",
   "background_texture": "assets/sprites/bedroom.png",
-  "controls_hint": "",
+  "player_lighting": {
+    "shader": "assets/shaders/glsl330/player_lighting.fs",
+    "ambient_color": "#9C8B7E",
+    "brightness": 0.78,
+    "warmth": 1.08
+  },
+  "dust_particles": {
+    "enabled": true,
+    "count": 85,
+    "color": "#FFF4DA"
+  },
   "doors": [
     {
       "label": "Corridor",
