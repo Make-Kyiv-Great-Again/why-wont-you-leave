@@ -29,6 +29,8 @@ public:
 
 private:
     void DrawHoldQGauge(Vector2 centerPos, float progress, bool isRemembering);
+    void UpdatePauseMenu(float dt);
+    void DrawPauseOverlay();
 
     std::string sceneId;
     std::string jsonPath;
@@ -51,4 +53,11 @@ private:
 
     Shader sceneShader = { 0 };
     std::string shaderPath;
+
+    // Pause system
+    bool isPaused = false;
+    int pauseSelectedBtn = 0; // 0: Options, 1: Exit
+    bool showPauseOptions = false;
+    Rectangle pauseOptionsRect;
+    Rectangle pauseExitRect;
 };

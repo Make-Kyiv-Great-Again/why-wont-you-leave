@@ -4,6 +4,7 @@
 #include "core/MemoryManager.hpp"
 #include "core/EffectManager.hpp"
 #include "core/ResourceManager.hpp"
+#include "scenes/MainMenuScene.hpp"
 #include <nlohmann/json.hpp>
 #include <cmath>
 #include <iostream>
@@ -17,6 +18,17 @@ DynamicScene::DynamicScene(const std::string& sceneId, float spawnPlayerX, const
       backgroundColor(RAYWHITE),
       player(spawnPlayerX >= 0.0f ? spawnPlayerX : 200.0f, 660.0f) {
     LoadFromConfigFile(jsonPath);
+
+    // Pause menu button layout (Options & Exit side-by-side in one row)
+    float btnW = 220.0f;
+    float btnH = 85.0f;
+    float gap = 40.0f;
+    float rowW = btnW * 2.0f + gap;
+    float startX = (screenWidth - rowW) / 2.0f;
+    float startY = 380.0f;
+
+    pauseOptionsRect = Rectangle{ startX, startY, btnW, btnH };
+    pauseExitRect    = Rectangle{ startX + btnW + gap, startY, btnW, btnH };
 
     // Auto-position player centered directly in front of the door matching targetDoorLabel
     bool positionedByDoor = false;
@@ -50,7 +62,7 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
     title = j.value("title", "SCENE");
     groundY = j.value("ground_y", 660.0f);
     backgroundColor = ResourceManager::HexToColor(j.value("background_color", "#F5F5F5"));
-    controlsHint = j.value("controls_hint", "Controls: [A/D] to Move | [E] Interact");
+    controlsHint = j.value("controls_hint", "Controls: [A/D] to Move | [E] Interact | [ESC] Pause");
 
     // Load background texture path
     backgroundTexturePath = "";
@@ -150,7 +162,53 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
     }
 }
 
+void DynamicScene::UpdatePauseMenu(float dt) {
+    Vector2 virtualMouse = SceneManager::Get().GetVirtualMousePosition();
+
+    // Mouse hover check
+    if (CheckCollisionPointRec(virtualMouse, pauseOptionsRect)) {
+        pauseSelectedBtn = 0;
+    } else if (CheckCollisionPointRec(virtualMouse, pauseExitRect)) {
+        pauseSelectedBtn = 1;
+    }
+
+    // Keyboard navigation (Left/Right)
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) {
+        pauseSelectedBtn = 0;
+    }
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) {
+        pauseSelectedBtn = 1;
+    }
+
+    bool clickPressed = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    bool actionPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_E) || clickPressed;
+
+    if (actionPressed) {
+        if (pauseSelectedBtn == 0) {
+            // Options
+            showPauseOptions = !showPauseOptions;
+        } else if (pauseSelectedBtn == 1) {
+            // Exit to Main Menu
+            isPaused = false;
+            SceneManager::Get().ChangeScene(std::make_unique<MainMenuScene>());
+        }
+    }
+}
+
 void DynamicScene::Update(float dt) {
+    // Pressing ESC toggles in-game pause
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        isPaused = !isPaused;
+        showPauseOptions = false;
+        return;
+    }
+
+    // If game is paused, only update pause menu
+    if (isPaused) {
+        UpdatePauseMenu(dt);
+        return;
+    }
+
     SceneManager::Get().SetTabPressed(IsKeyDown(KEY_TAB));
 
     // Hot-reload scene JSON when pressing R
@@ -265,6 +323,71 @@ void DynamicScene::DrawHoldQGauge(Vector2 centerPos, float progress, bool isReme
     DrawText(actionLabel, (int)centerPos.x - textW / 2, (int)centerPos.y + 40, 20, isRemembering ? GOLD : ORANGE);
 }
 
+void DynamicScene::DrawPauseOverlay() {
+    // 1. Darken the game screen slightly
+    DrawRectangle(0, 0, (int)screenWidth, (int)screenHeight, Fade(BLACK, 0.65f));
+
+    // 2. Pause Header
+    const char* pauseTitle = "GAME PAUSED";
+    int titleW = MeasureText(pauseTitle, 50);
+    DrawText(pauseTitle, (int)(screenWidth - titleW) / 2, 240, 50, GOLD);
+
+    // 3. Helper Lambda to draw SVG pause buttons (NO text overlays)
+    float time = (float)GetTime();
+    auto DrawPauseBtn = [&](int index, Rectangle rect, const char* texturePath) {
+        bool isSelected = (pauseSelectedBtn == index);
+        Texture2D btnTex = ResourceManager::Get().GetTexture(texturePath);
+
+        float scalePulse = isSelected ? (sinf(time * 6.0f) * 3.0f) : 0.0f;
+        Rectangle drawRect = {
+            rect.x - scalePulse,
+            rect.y - scalePulse,
+            rect.width + scalePulse * 2.0f,
+            rect.height + scalePulse * 2.0f
+        };
+
+        if (btnTex.id != 0) {
+            Color tintColor = isSelected ? WHITE : Fade(LIGHTGRAY, 0.85f);
+            DrawTexturePro(
+                btnTex,
+                Rectangle{ 0, 0, (float)btnTex.width, (float)btnTex.height },
+                drawRect,
+                Vector2{ 0, 0 },
+                0.0f,
+                tintColor
+            );
+
+            if (isSelected) {
+                DrawRectangleLinesEx(drawRect, 3.0f, GOLD);
+            }
+        } else {
+            Color boxColor = isSelected ? GOLD : DARKGRAY;
+            DrawRectangleRec(drawRect, boxColor);
+            DrawRectangleLinesEx(drawRect, 3.0f, WHITE);
+        }
+    };
+
+    // Draw Options and Exit buttons side-by-side in one row
+    DrawPauseBtn(0, pauseOptionsRect, "assets/sprites/optoins.png");
+    DrawPauseBtn(1, pauseExitRect, "assets/sprites/exit.png");
+
+    // Guidance footer
+    const char* pauseHint = "Press [ESC] to Resume Gameplay | [A/D / Mouse] to Select";
+    int hintW = MeasureText(pauseHint, 24);
+    DrawText(pauseHint, (int)(screenWidth - hintW) / 2, 700, 24, Fade(WHITE, 0.85f));
+
+    // Options Popup Overlay inside Pause
+    if (showPauseOptions) {
+        DrawRectangle(400, 200, 1200, 400, Fade(BLACK, 0.92f));
+        DrawRectangleLinesEx(Rectangle{ 400, 200, 1200, 400 }, 4.0f, GOLD);
+        
+        DrawText("OPTIONS / SETTINGS", 760, 250, 40, GOLD);
+        DrawText("- Fullscreen Mode: Press F11 or Alt+Enter at any time", 500, 340, 28, WHITE);
+        DrawText("- Hot Reload Scenes: Press R during gameplay", 500, 390, 28, WHITE);
+        DrawText("Press [Enter] or click Options again to close", 650, 520, 24, GRAY);
+    }
+}
+
 void DynamicScene::Draw() {
     ClearBackground(backgroundColor);
 
@@ -333,7 +456,7 @@ void DynamicScene::Draw() {
     }
 
     // Interaction Banner / Controls Guidance
-    if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB)) {
+    if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB) && !isPaused) {
         if (!promptText.empty()) {
             int textWidth = MeasureText(promptText.c_str(), 36);
             int bannerX = ((int)screenWidth - textWidth - 80) / 2;
@@ -343,11 +466,16 @@ void DynamicScene::Draw() {
             DrawText(controlsHint.c_str(), 40, 736, 30, GRAY);
         }
 
-        const char* tabHint = "[Hold TAB] Memory Archive | [R] Reload Scene";
+        const char* tabHint = "[Hold TAB] Memory Archive | [ESC] Pause | [R] Reload";
         int tabW = MeasureText(tabHint, 24);
         DrawText(tabHint, (int)screenWidth - tabW - 40, 736, 24, Fade(DARKBLUE, 0.8f));
     }
 
     // Draw Dialogue Overlay
     DialogueManager::Get().Draw();
+
+    // Draw Pause Menu Overlay if paused
+    if (isPaused) {
+        DrawPauseOverlay();
+    }
 }

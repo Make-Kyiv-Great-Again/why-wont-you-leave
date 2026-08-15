@@ -58,8 +58,17 @@ Texture2D ResourceManager::GetTexture(const std::string& filePath) {
         return it->second;
     }
 
-    Texture2D tex = LoadTexture(filePath.c_str());
+    std::string pathToLoad = filePath;
+    if (filePath.length() >= 4 && filePath.substr(filePath.length() - 4) == ".svg") {
+        std::string pngPath = filePath.substr(0, filePath.length() - 4) + ".png";
+        if (FileExists(pngPath.c_str())) {
+            pathToLoad = pngPath;
+        }
+    }
+
+    Texture2D tex = LoadTexture(pathToLoad.c_str());
     if (tex.id != 0) {
+        SetTextureFilter(tex, TEXTURE_FILTER_POINT);
         textureCache[filePath] = tex;
     }
     return tex;

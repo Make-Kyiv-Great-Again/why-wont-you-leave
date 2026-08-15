@@ -1,6 +1,6 @@
 #include "raylib.h"
 #include "core/SceneManager.hpp"
-#include "scenes/DynamicScene.hpp"
+#include "scenes/MainMenuScene.hpp"
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>
@@ -31,6 +31,9 @@ int main() {
     // Fallback window initialization
     InitWindow(1280, 512, "2D Room Navigation Game");
 
+    // Disable default ESC application quit key
+    SetExitKey(KEY_NULL);
+
     // Query active monitor dimensions & launch in Fullscreen Borderless Mode
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
@@ -45,7 +48,7 @@ int main() {
     ToggleBorderlessWindowed();
 
     SceneManager::Get().Init(virtualWidth, virtualHeight);
-    SceneManager::Get().ChangeScene(std::make_unique<DynamicScene>("corridor"));
+    SceneManager::Get().ChangeScene(std::make_unique<MainMenuScene>());
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 0, 1);

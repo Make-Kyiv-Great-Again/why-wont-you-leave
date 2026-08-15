@@ -1,5 +1,6 @@
 #include "core/SceneManager.hpp"
 #include "core/MemoryManager.hpp"
+#include "scenes/MainMenuScene.hpp"
 #include <cmath>
 
 SceneManager& SceneManager::Get() {
@@ -36,6 +37,39 @@ void SceneManager::Init(int width, int height) {
 
 void SceneManager::ChangeScene(std::unique_ptr<Scene> newScene) {
     nextScene = std::move(newScene);
+}
+
+void SceneManager::OpenMainMenu() {
+    if (currentScene) {
+        savedGameplayScene = std::move(currentScene);
+    }
+    ChangeScene(std::make_unique<MainMenuScene>());
+}
+
+void SceneManager::ResumeGame() {
+    if (savedGameplayScene) {
+        ChangeScene(std::move(savedGameplayScene));
+        savedGameplayScene = nullptr;
+    }
+}
+
+Vector2 SceneManager::GetVirtualMousePosition() const {
+    Vector2 mouse = GetMousePosition();
+    int windowW = GetScreenWidth();
+    int windowH = GetScreenHeight();
+
+    float scale = fminf((float)windowW / (float)screenWidth, (float)windowH / (float)screenHeight);
+    if (scale <= 0.0f) return mouse;
+
+    float destW = screenWidth * scale;
+    float destH = screenHeight * scale;
+    float destX = (windowW - destW) * 0.5f;
+    float destY = (windowH - destH) * 0.5f;
+
+    Vector2 virtualMouse;
+    virtualMouse.x = (mouse.x - destX) / scale;
+    virtualMouse.y = (mouse.y - destY) / scale;
+    return virtualMouse;
 }
 
 void SceneManager::SetTabPressed(bool pressed) {
