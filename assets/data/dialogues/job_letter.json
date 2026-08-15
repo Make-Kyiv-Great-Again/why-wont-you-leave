@@ -1,0 +1,173 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "",
+      "text": "The sound of paper being unfolded.",
+      "is_blackout": true,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "I got an offer.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "Where?",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "Another city.",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Evan",
+      "text": "For how long?",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Grace",
+      "text": "A year.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Evan",
+      "text": "You said yes?",
+      "is_blackout": true,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Grace",
+      "text": "I want to.",
+      "is_blackout": true,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Evan",
+      "text": "So you've already decided.",
+      "is_blackout": true,
+      "next_id": 9,
+      "options": []
+    },
+    {
+      "id": 9,
+      "speaker": "Grace",
+      "text": "I decided to try.",
+      "is_blackout": true,
+      "next_id": 10,
+      "options": []
+    },
+    {
+      "id": 10,
+      "speaker": "Evan",
+      "text": "And where does that leave us?",
+      "is_blackout": true,
+      "next_id": 11,
+      "options": []
+    },
+    {
+      "id": 11,
+      "speaker": "Grace",
+      "text": "Right beside me.",
+      "is_blackout": true,
+      "next_id": 12,
+      "options": []
+    },
+    {
+      "id": 12,
+      "speaker": "Evan",
+      "text": "That's impossible.",
+      "is_blackout": true,
+      "next_id": 13,
+      "options": []
+    },
+    {
+      "id": 13,
+      "speaker": "Grace",
+      "text": "Why?",
+      "is_blackout": true,
+      "next_id": 14,
+      "options": []
+    },
+    {
+      "id": 14,
+      "speaker": "Evan",
+      "text": "Because if you leave, everything will change.",
+      "is_blackout": true,
+      "next_id": 15,
+      "options": []
+    },
+    {
+      "id": 15,
+      "speaker": "Grace",
+      "text": "Of course it will change. But changing doesn't mean ending.",
+      "is_blackout": true,
+      "next_id": 16,
+      "options": []
+    },
+    {
+      "id": 16,
+      "speaker": "Voice",
+      "text": "She chose the job over you.",
+      "is_blackout": false,
+      "next_id": 17,
+      "options": []
+    },
+    {
+      "id": 17,
+      "speaker": "Evan",
+      "text": "No...",
+      "is_blackout": false,
+      "next_id": 18,
+      "options": []
+    },
+    {
+      "id": 18,
+      "speaker": "Voice",
+      "text": "She knew it would hurt you.",
+      "is_blackout": false,
+      "next_id": 19,
+      "options": []
+    },
+    {
+      "id": 19,
+      "speaker": "Evan",
+      "text": "She wanted to have a life of her own.",
+      "is_blackout": false,
+      "next_id": 20,
+      "options": []
+    },
+    {
+      "id": 20,
+      "speaker": "Voice",
+      "text": "And you wanted to be part of that life. Is that really asking for too much?",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

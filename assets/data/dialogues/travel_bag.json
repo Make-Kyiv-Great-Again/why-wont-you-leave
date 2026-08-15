@@ -1,0 +1,157 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "",
+      "text": "The sound of Grace packing clothes.",
+      "is_blackout": true,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "Don't take that shirt.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "Why?",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "Because you look terrible in it.",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Evan",
+      "text": "I thought you loved me no matter what.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Grace",
+      "text": "I do. Just not that much.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "",
+      "text": "They laugh.",
+      "is_blackout": true,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Evan",
+      "text": "You're really taking all of this with you?",
+      "is_blackout": true,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Grace",
+      "text": "I don't know. Maybe.",
+      "is_blackout": true,
+      "next_id": 9,
+      "options": []
+    },
+    {
+      "id": 9,
+      "speaker": "Evan",
+      "text": "What if you like it there?",
+      "is_blackout": true,
+      "next_id": 10,
+      "options": []
+    },
+    {
+      "id": 10,
+      "speaker": "Grace",
+      "text": "Then I'll live there.",
+      "is_blackout": true,
+      "next_id": 11,
+      "options": []
+    },
+    {
+      "id": 11,
+      "speaker": "Evan",
+      "text": "And me?",
+      "is_blackout": true,
+      "next_id": 12,
+      "options": []
+    },
+    {
+      "id": 12,
+      "speaker": "Grace",
+      "text": "You can come visit me.",
+      "is_blackout": true,
+      "next_id": 13,
+      "options": []
+    },
+    {
+      "id": 13,
+      "speaker": "Evan",
+      "text": "What if I don't want to?",
+      "is_blackout": true,
+      "next_id": 14,
+      "options": []
+    },
+    {
+      "id": 14,
+      "speaker": "Grace",
+      "text": "Then I'll come back to you.",
+      "is_blackout": true,
+      "next_id": 15,
+      "options": []
+    },
+    {
+      "id": 15,
+      "speaker": "Grace",
+      "text": "Evan, distance isn't the end.",
+      "is_blackout": true,
+      "next_id": 16,
+      "options": []
+    },
+    {
+      "id": 16,
+      "speaker": "Voice",
+      "text": "She was already planning to leave.",
+      "is_blackout": false,
+      "next_id": 17,
+      "options": []
+    },
+    {
+      "id": 17,
+      "speaker": "Voice",
+      "text": "And you still let her go.",
+      "is_blackout": false,
+      "next_id": 18,
+      "options": []
+    },
+    {
+      "id": 18,
+      "speaker": "Evan",
+      "text": "She didn't want to leave me...",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

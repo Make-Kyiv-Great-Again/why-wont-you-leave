@@ -1,0 +1,141 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "We were driving...",
+      "is_blackout": false,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "",
+      "text": "The sound of a car door closing. The engine starts.",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Grace",
+      "text": "Evan, please. Don't start again.",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Evan",
+      "text": "What am I supposed to do?",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "Grace",
+      "text": "Talk to me normally.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Evan",
+      "text": "You've already made up your mind.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Grace",
+      "text": "I told you. I'm not leaving you.",
+      "is_blackout": true,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Evan",
+      "text": "For now.",
+      "is_blackout": true,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Grace",
+      "text": "Stop the car.",
+      "is_blackout": true,
+      "next_id": 9,
+      "options": []
+    },
+    {
+      "id": 9,
+      "speaker": "Evan",
+      "text": "Now?",
+      "is_blackout": true,
+      "next_id": 10,
+      "options": []
+    },
+    {
+      "id": 10,
+      "speaker": "Grace",
+      "text": "Yes.",
+      "is_blackout": true,
+      "next_id": 11,
+      "options": []
+    },
+    {
+      "id": 11,
+      "speaker": "Evan",
+      "text": "We haven't finished talking.",
+      "is_blackout": true,
+      "next_id": 12,
+      "options": []
+    },
+    {
+      "id": 12,
+      "speaker": "Grace",
+      "text": "Exactly. That's why I want you to stop.",
+      "is_blackout": true,
+      "next_id": 13,
+      "options": []
+    },
+    {
+      "id": 13,
+      "speaker": "",
+      "text": "The sound of the road grows louder... then cuts off.",
+      "is_blackout": true,
+      "next_id": 14,
+      "options": []
+    },
+    {
+      "id": 14,
+      "speaker": "Voice",
+      "text": "Don't remember.",
+      "is_blackout": false,
+      "next_id": 15,
+      "options": []
+    },
+    {
+      "id": 15,
+      "speaker": "Evan",
+      "text": "What?",
+      "is_blackout": false,
+      "next_id": 16,
+      "options": []
+    },
+    {
+      "id": 16,
+      "speaker": "Voice",
+      "text": "You don't need to remember this. There was nothing you could have changed anyway.",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

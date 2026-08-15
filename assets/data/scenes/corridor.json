@@ -25,7 +25,7 @@
     },
     {
       "label": "Kitchen",
-      "rect": { "x": 1560.0, "y": 200.0, "width": 220.0, "height": 560.0 },
+      "rect": { "x": 1520.0, "y": 200.0, "width": 220.0, "height": 560.0 },
       "target_scene": "kitchen",
       "target_door": "Corridor",
       "is_visible": false
@@ -33,12 +33,30 @@
   ],
   "items": [
     {
+      "artifact_id": "car_keys",
+      "name": "Car Keys",
+      "rect": { "x": 1260.0, "y": 460.0, "width": 180.0, "height": 200.0 },
+      "dialogue_file": "assets/data/dialogues/car_keys.json",
+      "texture": "assets/sprites/items/hall/19_key.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
       "artifact_id": "corridor_locked_door",
       "name": "Locked Door",
-      "rect": { "x": 760.0, "y": 270.0, "width": 260.0, "height": 490.0 },
+      "rect": { "x": 880.0, "y": 270.0, "width": 260.0, "height": 490.0 },
       "dialogue_file": "assets/data/dialogues/corridor_locked_door.json",
       "is_visible": false,
       "is_memory_artifact": false
+    },
+    {
+      "artifact_id": "guitar",
+      "name": "Guitar",
+      "rect": { "x": 1800.0, "y": 600.0, "width": 180.0, "height": 240.0 },
+      "dialogue_file": "assets/data/dialogues/guitar.json",
+      "texture": "assets/sprites/items/hall/guitar.png",
+      "is_visible": false,
+      "is_memory_artifact": true
     }
   ]
 }

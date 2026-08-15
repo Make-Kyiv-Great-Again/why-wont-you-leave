@@ -1,0 +1,77 @@
+{
+  "start_node_id": 0,
+  "nodes": [
+    {
+      "id": 0,
+      "speaker": "Evan",
+      "text": "I remember this night.",
+      "is_blackout": false,
+      "next_id": 1,
+      "options": []
+    },
+    {
+      "id": 1,
+      "speaker": "Grace",
+      "text": "You're not listening to me again!",
+      "is_blackout": true,
+      "next_id": 2,
+      "options": []
+    },
+    {
+      "id": 2,
+      "speaker": "Evan",
+      "text": "Because you talk like I'm your enemy!",
+      "is_blackout": true,
+      "next_id": 3,
+      "options": []
+    },
+    {
+      "id": 3,
+      "speaker": "Grace",
+      "text": "Because you don't hear anything except yourself!",
+      "is_blackout": true,
+      "next_id": 4,
+      "options": []
+    },
+    {
+      "id": 4,
+      "speaker": "",
+      "text": "A sudden crash. The plate breaks into pieces.",
+      "is_blackout": true,
+      "next_id": 5,
+      "options": []
+    },
+    {
+      "id": 5,
+      "speaker": "Evan",
+      "text": "I'm sorry.",
+      "is_blackout": true,
+      "next_id": 6,
+      "options": []
+    },
+    {
+      "id": 6,
+      "speaker": "Grace",
+      "text": "You always say that afterward.",
+      "is_blackout": true,
+      "next_id": 7,
+      "options": []
+    },
+    {
+      "id": 7,
+      "speaker": "Voice",
+      "text": "You made her cry a lot. And now she's gone. You can't even ask her to forgive you.",
+      "is_blackout": false,
+      "next_id": 8,
+      "options": []
+    },
+    {
+      "id": 8,
+      "speaker": "Evan",
+      "text": "I know...",
+      "is_blackout": false,
+      "next_id": -1,
+      "options": []
+    }
+  ]
+}

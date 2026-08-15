@@ -170,10 +170,10 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
                 itemSprite.frameTime = itemJson.value("frame_time", 0.1f);
             }
 
-            bool isVisible = itemJson.value("is_visible", true);
-            bool isMemoryArtifact = itemJson.value("is_memory_artifact", isVisible);
+            bool isVisible = itemJson.value("is_visible", false);
+            bool isMemoryArtifact = itemJson.value("is_memory_artifact", true);
 
-            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile, itemSprite, isVisible);
+            items.emplace_back(artifactId, rect, color, borderColor, name, dialogueFile, itemSprite, isVisible, isMemoryArtifact);
 
             // Register with MemoryManager only if it is a memory artifact
             if (isMemoryArtifact) {
@@ -182,7 +182,7 @@ void DynamicScene::LoadFromConfigFile(const std::string& path) {
                 else if (sceneId == "bathroom") roomId = 2;
                 else if (sceneId == "kitchen") roomId = 3;
                 else if (sceneId == "corridor") roomId = 0;
-                MemoryManager::Get().RegisterArtifact(artifactId, name, color, borderColor, roomId);
+                MemoryManager::Get().RegisterArtifact(artifactId, name, itemSprite.texturePath, color, borderColor, roomId);
             }
         }
     }
@@ -316,7 +316,7 @@ void DynamicScene::Update(float dt) {
         LoadFromConfigFile(jsonPath);
     }
 
-    // Update sprite animations
+    // Update sprite animations (items are never erased from scene)
     for (auto& item : items) {
         item.Update(dt);
     }
@@ -327,7 +327,7 @@ void DynamicScene::Update(float dt) {
     // Update effects
     EffectManager::Get().Update(dt);
 
-    // Shimmer glint on interactable doors and items (every ~1.2 seconds)
+    // Shimmer glint on interactable doors and active items (every ~1.2 seconds)
     sparkleTimer += dt;
     if (sparkleTimer >= 1.2f) {
         sparkleTimer = 0.0f;
@@ -339,8 +339,11 @@ void DynamicScene::Update(float dt) {
             EffectManager::Get().SpawnShimmerGlint(handlePos, 14.0f, Color{ 220, 240, 255, 255 });
         }
         for (const auto& item : items) {
-            Vector2 itemCorner = { item.rect.x + item.rect.width * 0.8f, item.rect.y + item.rect.height * 0.2f };
-            EffectManager::Get().SpawnShimmerGlint(itemCorner, 12.0f, Color{ 240, 248, 255, 255 });
+            // Ambient items always shimmer; story memory items shimmer only when not in TAB
+            if (!item.isMemoryArtifact || !ActManager::Get().IsArtifactRemembered(item.artifactId)) {
+                Vector2 itemCorner = { item.rect.x + item.rect.width * 0.5f, item.rect.y + item.rect.height * 0.4f };
+                EffectManager::Get().SpawnShimmerGlint(itemCorner, 14.0f, Color{ 240, 248, 255, 255 });
+            }
         }
     }
 
@@ -450,11 +453,44 @@ void DynamicScene::Update(float dt) {
     }
 
     // Check interaction with Room items (only if not hovering a door)
+    bool hoveringAnyItem = false;
     if (promptText.empty()) {
         for (auto it = items.begin(); it != items.end(); ++it) {
+            // If item is already in TAB memory, skip interaction
+            if (ActManager::Get().IsArtifactRemembered(it->artifactId)) continue;
+
             if (it->CheckCollision(player.rect)) {
+                hoveringAnyItem = true;
                 activeHoverItem = &(*it);
-                promptText = "Press [E] to Examine " + it->name;
+
+                bool isArtifact = (it->artifactId != "bedroom_mirror" && it->artifactId != "corridor_locked_door" && 
+                                   it->artifactId != "kitchen_oven" && it->artifactId != "bathroom_toilet");
+
+                if (it->isMemoryArtifact) {
+                    promptText = "Press [E] to Inspect " + it->name + " | Hold [Q] to Take Memory";
+
+                    if (IsKeyDown(KEY_Q)) {
+                        holdQTimer += dt;
+                        if (holdQTimer >= 0.85f) {
+                            if (MemoryManager::Get().GetRememberedCount() >= 5) {
+                                promptText = "Memory Archive Full (Max 5 items)!";
+                            } else {
+                                ActManager::Get().MarkArtifactRemembered(it->artifactId);
+                                holdQTimer = 0.0f;
+                                EffectManager::Get().SpawnForgettingEffect(it->rect, GOLD);
+                                Sound selectSfx = ResourceManager::Get().GetSound("assets/sounds/select_sound.mp3");
+                                if (selectSfx.frameCount > 0) PlaySound(selectSfx);
+                                promptText = "";
+                                return;
+                            }
+                        }
+                    } else {
+                        holdQTimer = 0.0f;
+                    }
+                } else {
+                    promptText = "Press [E] to Examine " + it->name;
+                    holdQTimer = 0.0f;
+                }
 
                 if (IsKeyPressed(KEY_E)) {
                     it->Interact();
@@ -464,6 +500,10 @@ void DynamicScene::Update(float dt) {
                 break;
             }
         }
+    }
+
+    if (!hoveringAnyItem) {
+        holdQTimer = 0.0f;
     }
 }
 
@@ -641,11 +681,16 @@ void DynamicScene::Draw() {
 
     // Interaction Banner
     if (!DialogueManager::Get().IsActive() && !IsKeyDown(KEY_TAB) && !isPaused) {
+        if (holdQTimer > 0.05f) {
+            Vector2 gaugePos = { player.rect.x + player.rect.width / 2.0f, player.rect.y - 45.0f };
+            DrawHoldQGauge(gaugePos, fminf(holdQTimer / 0.85f, 1.0f), true);
+        }
+
         if (!promptText.empty()) {
-            int textWidth = ResourceManager::MeasureGameText(promptText.c_str(), 36);
+            int textWidth = ResourceManager::MeasureGameText(promptText.c_str(), 32);
             int bannerX = ((int)screenWidth - textWidth - 80) / 2;
             DrawRectangle(bannerX, 690, textWidth + 80, 70, Fade(DARKGRAY, 0.85f));
-            ResourceManager::DrawGameText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 706, 36, WHITE);
+            ResourceManager::DrawGameText(promptText.c_str(), ((int)screenWidth - textWidth) / 2, 708, 32, WHITE);
         }
     }
 

@@ -85,11 +85,6 @@ bool DialogueManager::IsMemoryMode() const {
 }
 
 void DialogueManager::OnDialogueFinished() {
-    if (!activeArtifactId.empty()) {
-        if (ActManager::Get().IsArtifactRemembered(activeArtifactId)) {
-            ActManager::Get().VanishArtifact(activeArtifactId);
-        }
-    }
 
     if (activeArtifactId == "windshield_fragment" && ActManager::Get().IsArtifactRemembered("windshield_fragment")) {
         ActManager::Get().SetAct(5);
@@ -122,6 +117,10 @@ void DialogueManager::OnDialogueFinished() {
 }
 
 void DialogueManager::Update(float dt) {
+    bool shouldBlackout = isActive && currentNode && (currentNode->isBlackout || currentNode->isMemory || isMemoryMode);
+    float targetAlpha = shouldBlackout ? 0.98f : 0.0f;
+    blackoutAlpha += (targetAlpha - blackoutAlpha) * fminf(dt * 7.0f, 1.0f);
+
     if (!isActive || !currentNode) return;
 
     pulseTimer += dt * 4.0f;
@@ -200,9 +199,6 @@ void DialogueManager::Update(float dt) {
 
             if (chosenText == "Remember") {
                 isMemoryMode = true;
-                if (!activeArtifactId.empty()) {
-                    ActManager::Get().MarkArtifactRemembered(activeArtifactId);
-                }
             }
 
             int nextId = currentNode->options[selectedOption].targetNodeId;
@@ -321,13 +317,15 @@ void DialogueManager::Draw() {
     bool hasOptions = !currentNode->options.empty();
     bool isTypingFinished = (visibleChars >= currentNode->text.length());
 
-    // 1. Memory Mode Dark Backdrop & Header
-    if (isMemoryMode) {
-        DrawRectangle(0, 0, 2000, 800, Fade(BLACK, 0.96f));
+    // 1. Memory Mode / Blackout Dark Backdrop & Header
+    if (blackoutAlpha > 0.02f) {
+        DrawRectangle(0, 0, 2000, 800, Fade(BLACK, blackoutAlpha));
 
-        const char* memTitle = "✦ MEMORY RECALLED ✦";
-        int mtw = ResourceManager::MeasureGameText(memTitle, 36);
-        ResourceManager::DrawGameText(memTitle, (2000 - mtw) / 2, 45, 36, Fade(GOLD, 0.85f));
+        if (currentNode && (currentNode->isMemory || currentNode->isBlackout)) {
+            const char* memTitle = "✦ MEMORY ✦";
+            int mtw = ResourceManager::MeasureGameText(memTitle, 36);
+            ResourceManager::DrawGameText(memTitle, (2000 - mtw) / 2, 45, 36, Fade(GOLD, blackoutAlpha * 0.85f));
+        }
     }
 
     // 2. Response Options (Middle of Screen - Small Pale Vertical Buttons)
@@ -369,9 +367,6 @@ void DialogueManager::Draw() {
 
                     if (chosenText == "Remember") {
                         isMemoryMode = true;
-                        if (!activeArtifactId.empty()) {
-                            ActManager::Get().MarkArtifactRemembered(activeArtifactId);
-                        }
                     }
 
                     int nextId = currentNode->options[i].targetNodeId;

@@ -25,7 +25,7 @@
     },
     {
       "label": "Bathroom",
-      "rect": { "x": 1780.0, "y": 200.0, "width": 200.0, "height": 560.0 },
+      "rect": { "x": 1860.0, "y": 200.0, "width": 200.0, "height": 560.0 },
       "target_scene": "bathroom",
       "target_door": "Kitchen",
       "is_visible": false
@@ -33,9 +33,36 @@
   ],
   "items": [
     {
+      "artifact_id": "photo_of_couple",
+      "name": "Photograph",
+      "rect": { "x": 620.0, "y": 220.0, "width": 160.0, "height": 200.0 },
+      "dialogue_file": "assets/data/dialogues/photo_of_couple.json",
+      "texture": "assets/sprites/items/kitchen/photo_of_couple.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
+      "artifact_id": "job_letter",
+      "name": "Job Offer Letter",
+      "rect": { "x": 1120.0, "y": 420.0, "width": 160.0, "height": 200.0 },
+      "dialogue_file": "assets/data/dialogues/job_letter.json",
+      "texture": "assets/sprites/items/kitchen/job_letter.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
+      "artifact_id": "broken_plate",
+      "name": "Broken Plate",
+      "rect": { "x": 1660.0, "y": 480.0, "width": 140.0, "height": 180.0 },
+      "dialogue_file": "assets/data/dialogues/broken_plate.json",
+      "texture": "assets/sprites/items/kitchen/broken_plate.png",
+      "is_visible": false,
+      "is_memory_artifact": true
+    },
+    {
       "artifact_id": "kitchen_oven",
       "name": "Oven",
-      "rect": { "x": 1240.0, "y": 450.0, "width": 220.0, "height": 310.0 },
+      "rect": { "x": 1320.0, "y": 440.0, "width": 200.0, "height": 310.0 },
       "dialogue_file": "assets/data/dialogues/kitchen_oven.json",
       "is_visible": false,
       "is_memory_artifact": false
