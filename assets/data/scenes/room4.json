@@ -15,14 +15,5 @@
       "texture": "assets/sprites/door.png"
     }
   ],
-  "items": [
-    {
-      "artifact_id": "obsidian_heart",
-      "name": "Obsidian Heart",
-      "rect": { "x": 950.0, "y": 670.0, "width": 90.0, "height": 90.0 },
-      "color": "#111111",
-      "border_color": "#FF0000",
-      "dialogue_file": "assets/data/dialogues/obsidian_heart.json"
-    }
-  ]
+  "items": []
 }

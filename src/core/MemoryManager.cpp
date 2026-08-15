@@ -65,16 +65,15 @@ const std::vector<MemoryArtifact>& MemoryManager::GetAllArtifacts() const {
 void MemoryManager::DrawMemoryInventoryOverlay(float transition) {
     if (transition <= 0.0f) return;
 
-    int count = (int)artifacts.size();
+    const int totalSlots = 5;
     float screenWidth = 2000.0f;
     float screenHeight = 800.0f;
 
-    // Distribute slots across the screen width
-    float spacing = screenWidth / (count + 1);
+    // Distribute exactly 5 slots across the screen width
+    float spacing = screenWidth / (totalSlots + 1);
     float time = (float)GetTime();
 
-    for (int i = 0; i < count; i++) {
-        const auto& art = artifacts[i];
+    for (int i = 0; i < totalSlots; i++) {
         float slotX = spacing * (i + 1);
         float centerY = screenHeight / 2.0f;
 
@@ -86,7 +85,10 @@ void MemoryManager::DrawMemoryInventoryOverlay(float transition) {
         float cubeY = centerY - cubeSize / 2.0f + floatOffset;
         Rectangle cubeRect = { cubeX, cubeY, cubeSize, cubeSize };
 
-        if (art.isRemembered) {
+        bool isSlotRemembered = (i < (int)artifacts.size() && artifacts[i].isRemembered);
+
+        if (isSlotRemembered) {
+            const auto& art = artifacts[i];
             // Draw soft radial light circles behind the remembered cube
             // Outer soft aura
             DrawCircle((int)slotX, (int)(centerY + floatOffset), 150.0f, Fade(art.color, 0.12f * transition));
