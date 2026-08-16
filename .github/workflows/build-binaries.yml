@@ -1,0 +1,77 @@
+name: Build Game Binaries (Windows & macOS)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Game
+        run: cmake --build build --config Release
+
+      - name: Prepare Windows Package
+        shell: bash
+        run: |
+          mkdir -p package_windows/WhyWontYouLeave
+          if [ -f "build/Release/RaylibGame.exe" ]; then
+            cp build/Release/RaylibGame.exe package_windows/WhyWontYouLeave/
+          elif [ -f "build/RaylibGame.exe" ]; then
+            cp build/RaylibGame.exe package_windows/WhyWontYouLeave/
+          fi
+          cp -r assets package_windows/WhyWontYouLeave/
+          cd package_windows
+          7z a ../WhyWontYouLeave-Windows.zip WhyWontYouLeave
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhyWontYouLeave-Windows
+          path: WhyWontYouLeave-Windows.zip
+
+  build-macos:
+    name: Build macOS (Universal)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Game
+        run: cmake --build build --config Release
+
+      - name: Prepare macOS Package
+        run: |
+          mkdir -p package_mac/WhyWontYouLeave
+          cp build/RaylibGame package_mac/WhyWontYouLeave/
+          cp -r assets package_mac/WhyWontYouLeave/
+          
+          # Create double-clickable .command launcher for macOS
+          cat << 'EOF' > package_mac/WhyWontYouLeave/Play_Game.command
+          #!/bin/bash
+          cd "$(dirname "$0")"
+          chmod +x ./RaylibGame
+          ./RaylibGame
+          EOF
+          chmod +x package_mac/WhyWontYouLeave/Play_Game.command
+          chmod +x package_mac/WhyWontYouLeave/RaylibGame
+          
+          cd package_mac
+          zip -r ../WhyWontYouLeave-macOS.zip WhyWontYouLeave
+
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhyWontYouLeave-macOS
+          path: WhyWontYouLeave-macOS.zip
