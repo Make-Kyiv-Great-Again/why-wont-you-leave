@@ -1,50 +1,80 @@
-# Raylib C++ Boilerplate
+# Why Won't You Leave?
 
-A boilerplate C++ project using `raylib` and `raylib-cpp`.
+> A psychological mystery and atmospheric narrative adventure built in C++17 with [Raylib](https://www.raylib.com/).
 
-## Features
-- Terminal-only CMake workflow
-- Fetches `raylib` and `raylib-cpp` automatically via `FetchContent`
-- Object-Oriented C++ design (Scene, Entity, GameApp)
-- Layering and Post-Processing support (Bloom shader example)
+---
 
-## Build Instructions
+## 🎮 Quick Play (No Installation / No Compilers Needed)
+
+Ready-to-play pre-built packages for Windows and macOS:
+
+### 🪟 Windows
+1. Download / extract **`WhyWontYouLeaveWindows.zip`**.
+2. Double-click **`RaylibGame.exe`**.
+3. *Enjoy the game!*
+
+### 🍏 macOS
+1. Download / extract **`WhyWontYouLeaveMac.zip`**.
+2. Double-click **`Play_Game.command`** (or open Terminal in the folder and run `./RaylibGame`).
+3. *(If macOS Gatekeeper asks, right-click `Play_Game.command` and choose **Open**).*
+
+---
+
+## 🕹️ Controls
+
+| Key | Action |
+|---|---|
+| **`A` / `D`** or **`←` / `→`** | Move Left / Right |
+| **`E`** | Interact / Inspect / Examine / Advance Dialogue / Open Door |
+| **`Q` (Hold)** | Archive Memory into TAB inventory (Max 5 memories) |
+| **`TAB`** | Open / Close Memory Archive |
+| **`ESC`** | Pause Menu |
+| **`Space` / `Enter` / `Click`** | Fast-forward text / Confirm selection |
+
+---
+
+## 📖 Story & Features
+- **Atmospheric Narrative**: Explore the rooms, reconstruct fragmented memories, and uncover the truth behind Evan and Grace.
+- **4 Branching Narrative Endings**: Your choices and the memories you preserve directly determine Evan's fate.
+- **Custom Shaders & Audio**: Dynamic lighting, pixelated memory dissolving, corrupted memory shaders, and an original soundtrack.
+
+---
+
+## 🛠️ Building from Source (For Developers)
 
 ### Prerequisites
 - CMake (3.14+)
-- C++17 compliant compiler
-- Standard build tools (make, gcc/clang/msvc)
+- C++17 compliant compiler (`clang`, `gcc`, or `MSVC`)
+- Standard build tools
 
-### macOS & Windows (Terminal)
-
+### macOS / Linux
 ```bash
-# 1. Configure the project
-cmake -B build
-
-# 2. Build the project
+# 1. Configure and build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
-# 3. Run the executable (The executable is usually created inside the build directory)
-# macOS / Linux
+# 2. Run the game
 ./build/RaylibGame
-# Windows
-.\build\Debug\RaylibGame.exe
 ```
 
-### WebAssembly (Emscripten)x
+### Windows (PowerShell / Command Prompt)
+```powershell
+# 1. Configure and build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
 
-**Prerequisites:** You must have the [Emscripten SDK (emsdk)](https://emscripten.org/docs/getting_started/downloads.html) installed and activated in your terminal environment.
+# 2. Run the game
+.\build\Release\RaylibGame.exe
+```
 
+### WebAssembly (Play in Browser)
 ```bash
-# 1. Configure the project for WebAssembly using emcmake
+# Prerequisites: Emscripten SDK (emsdk) activated
 emcmake cmake -B build_web
-
-# 2. Build the project
 cmake --build build_web
 
-# 3. Serve the generated files
-# Browsers prevent loading local files via XHR, so you must use a local web server
+# Serve locally
 cd build_web
 python3 -m http.server 8080
 ```
-Then, open your web browser and navigate to `http://localhost:8080/RaylibGame.html` to play the game!
+Open `http://localhost:8080/RaylibGame.html` in your browser.
